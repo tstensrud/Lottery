@@ -5,43 +5,16 @@ import java.util.Random;
 public class Lottery {
     public static int totalPlayableNumbers = 40;
     public static int totalNumbersPerRow = 7;
-    public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
     public static LinkedList<User> users = new LinkedList<User>();
     public static void main(String[] args) {
 
+        TicketOperations ticketOperations = new TicketOperations();
+
         for(int i = 0; i < 5; i++) {
-            generateTicket(5);
+            ticketOperations.generateTicket(5);
         }
-
-        System.out.println("Total tickets: " + tickets.size());
     }
-
-    // generate ticket
-    public static void generateTicket(int rows) {
-        int[][] kupong = new int[rows][];
-        
-        int ticketId = tickets.size() + 1;
-
-        for (int i = 0; i < kupong.length; i++) {
-            kupong[i] = generateTicketRow();
-        }
-        
-        tickets.add(new Ticket(kupong, ticketId, 1234));
-
-        /*
-        for (int i = 0; i < kupong.length; i++) {
-            for (int j = 0; j < totalNumbersPerRow; j++) {
-                if (j != totalNumbersPerRow - 1) {
-                    System.out.print(kupong[i][j] + " - ");    
-                }
-                else {
-                    System.out.print(kupong[i][j]);
-                }
-            }
-            System.out.println("\n");
-            
-        }*/
-    }
+    
 
     // Generate a winning row. 
     // For each number nextNumber thats drawed, it is removed from pool of availableNumbers
