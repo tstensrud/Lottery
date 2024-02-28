@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -32,8 +33,9 @@ public class TicketOperations {
             
         }*/
     }
-
-    public int[] generateTicketRow() {
+    
+    // generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
+    public static int[] generateTicketRow() {
         int[] row = new int[totalNumbersPerRow];
         for (int i = 0; i < totalNumbersPerRow; i++) {
             int number = generateRandomNumber(true, totalPlayableNumbers);
@@ -48,10 +50,10 @@ public class TicketOperations {
         return sortRow(row);
     }
 
-        // generate a random number
+    // generate a random number
     // set forTicket true if the numbers are to be from 1 to max
     // set forTicket false if the numbers are to be from 0 to max
-    public int generateRandomNumber(boolean forTicket, int max) {
+    public static int generateRandomNumber(boolean forTicket, int max) {
         Random ran = new Random();
         int number;
         if (forTicket) {
@@ -64,7 +66,7 @@ public class TicketOperations {
     }
 
     // sort row in ascending order
-    public int[] sortRow(int[] row) {
+    public static int[] sortRow(int[] row) {
         int temp = 0;
         for (int i = 0; i < row.length; i++){
             for (int j = i+1; j < row.length; j++) {
@@ -76,6 +78,39 @@ public class TicketOperations {
             }
         }
         return row;        
+    }
+
+    // Generate a winning row. 
+    // For each number nextNumber thats drawed, it is removed from pool of availableNumbers
+    public static int[] winningRow() {
+        ArrayList<Integer> availableNumbers = new ArrayList<>();
+        int[] winningRow = new int[totalNumbersPerRow];
+
+        // fill arraylist with numbers that should be in play
+        for (int i = 0; i<totalPlayableNumbers; i++) {
+            availableNumbers.add(i+1);
+        }
+
+
+        for (int i = 0; i < winningRow.length; i++) {
+            int nextNumber;
+            if (i == 0) {
+                nextNumber = generateRandomNumber(false, totalPlayableNumbers);
+                winningRow[i] = availableNumbers.get(nextNumber);
+                availableNumbers.remove(nextNumber);
+            }
+            else {
+                nextNumber = generateRandomNumber(false, totalPlayableNumbers - i);
+                winningRow[i] = availableNumbers.get(nextNumber);
+                availableNumbers.remove(nextNumber);
+            }
+        }
+
+        sortRow(winningRow);
+        for(int i = 0; i < winningRow.length; i++) {
+            System.out.print(winningRow[i] + " - ");
+        }
+        return winningRow;
     }
     
 }
