@@ -8,30 +8,19 @@ public class TicketOperations {
     public static int totalNumbersPerRow = 7;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
 
-    public void generateTicket(int rows) {
-        int[][] kupong = new int[rows][];
-        
-        int ticketId = tickets.size() + 1;
+    // Generate a ticket with n-amount of rows
+    public void generateTicket(int rows, int userId) {
 
-        for (int i = 0; i < kupong.length; i++) {
-            kupong[i] = generateTicketRow();
+        int[][] ticket = new int[rows][];
+        
+        int ticketId = tickets.size() + 1001;
+
+        for (int i = 0; i < rows; i++) {
+                ticket[i] = generateTicketRow();
         }
         
-        tickets.add(new Ticket(kupong, ticketId, 1234));
-        System.out.println("Total tickets: " + tickets.size());
-        /*
-        for (int i = 0; i < kupong.length; i++) {
-            for (int j = 0; j < totalNumbersPerRow; j++) {
-                if (j != totalNumbersPerRow - 1) {
-                    System.out.print(kupong[i][j] + " - ");    
-                }
-                else {
-                    System.out.print(kupong[i][j]);
-                }
-            }
-            System.out.println("\n");
-            
-        }*/
+        tickets.add(new Ticket(ticket, ticketId, userId));
+
     }
     
     // generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
@@ -46,13 +35,12 @@ public class TicketOperations {
             }
             row[i] = number;
         }
-
         return sortRow(row);
     }
 
-    // generate a random number
-    // set forTicket true if the numbers are to be from 1 to max
-    // set forTicket false if the numbers are to be from 0 to max
+    /* generate a random number
+    set forTicket true if the numbers are to be from 1 to max
+    set forTicket false if the numbers are to be from 0 to max */
     public static int generateRandomNumber(boolean forTicket, int max) {
         Random ran = new Random();
         int number;
@@ -80,8 +68,8 @@ public class TicketOperations {
         return row;        
     }
 
-    // Generate a winning row. 
-    // For each number nextNumber thats drawed, it is removed from pool of availableNumbers
+    /* Generate a winning row. 
+    For each number nextNumber thats drawed, it is removed from pool of availableNumbers */
     public static int[] winningRow() {
         ArrayList<Integer> availableNumbers = new ArrayList<>();
         int[] winningRow = new int[totalNumbersPerRow];
