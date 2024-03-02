@@ -95,9 +95,6 @@ public class TicketOperations {
         }
 
         sortRow(winningRow);
-        for(int i = 0; i < winningRow.length; i++) {
-            System.out.print(winningRow[i] + " - ");
-        }
         return winningRow;
     }
     
