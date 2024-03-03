@@ -6,15 +6,15 @@ public class TicketOperations {
 
     public static int totalPlayableNumbers = 40;
     public static int totalNumbersPerRow = 7;
+    public static int ticketId = 10000;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
 
     // Generate a ticket with n-amount of rows
     public void generateTicket(int rows, int userId) {
 
         int[][] ticket = new int[rows][];
+        ticketId++;
         
-        int ticketId = tickets.size() + 1001;
-
         for (int i = 0; i < rows; i++) {
                 ticket[i] = generateTicketRow();
         }
@@ -54,7 +54,7 @@ public class TicketOperations {
     }
 
     // sort row in ascending order
-    public static int[] sortRow(int[] row) {
+    private static int[] sortRow(int[] row) {
         int temp = 0;
         for (int i = 0; i < row.length; i++){
             for (int j = i+1; j < row.length; j++) {

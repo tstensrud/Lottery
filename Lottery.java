@@ -9,11 +9,10 @@ import java.util.*;
 
 
 public class Lottery {
-    public static int totalPlayableNumbers = 40;
-    public static int totalNumbersPerRow = 7;
+
+    public static int[] currentWinningNumbers = new int[7];
     public static LinkedList<User> users = new LinkedList<User>();
     public static int[] winningRow = new int[7];
-    public static boolean running = true;
     static TicketOperations ticketOperations = new TicketOperations();
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
@@ -21,32 +20,11 @@ public class Lottery {
         drawUi();
         // generate one generic user for testing
         users.add(new User("Torbjørn", 111111));
-
-        //TicketOperations ticketOperations = new TicketOperations();
-        /*
-        Scanner scanner = new Scanner(System.in);
-        String input = null;
-        System.out.println("Welcome to the lottery! Please make a choice.");
-        while(running == true) {            
-            System.out.println("[N]ew for new ticket. \n [W] for generating winning numbers. \n [C]heck to check if your ticket is a winner");
-            input = scanner.nextLine();
-            if (input.equals("N") || input.equals("n")) {
-               newTicket();
-               running = true;
-            }
-    
-            if (input.equals("W") || input.equals("w")) {
-                winningTicket();
-                running = true;
-            }
-        }
-        
-
-        scanner.close();*/
     }
 
     public static void drawUi() {
-
+        int buttonLength = 150;
+        int buttonHeight = 30;
         // main frame
         JFrame mainFrame = new JFrame("Lottery");
         int mainFrameWidth = 1024;
@@ -55,75 +33,110 @@ public class Lottery {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidth = (int)screenSize.getWidth();
         int screenHeight = (int)screenSize.getHeight();
+        
+
+        //center frame on screen
+        mainFrame.setLocation((screenWidth / 2) - (mainFrameWidth/2),(screenHeight / 2) - (mainFrameHeight / 2));
+
+        // textareas
+        JTextArea mainTextArea = new JTextArea("Output");
+        mainTextArea.setBounds(300, 50, 600, 300);
+
+        // buttons
+        JButton newTicketButton = new JButton("New ticket");
+        newTicketButton.setBounds(50, 50, buttonLength, buttonHeight);
+        JButton winningNumbersButton = new JButton("Winning numbers");
+        winningNumbersButton.setBounds(50, 100, buttonLength, buttonHeight);
+        JButton newUserButton = new JButton("New user");
+        newUserButton.setBounds(50, 150, buttonLength, buttonHeight);
+        JButton allTicketsButton = new JButton("Print all ticket IDs");
+        allTicketsButton.setBounds(50, 200, buttonLength, buttonHeight);
+
+        // NEW TICKET newTicketButton actionlistener
+        newTicketButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);
+                Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
+                int rows = (Integer)JOptionPane.showInputDialog(null,"Choose number of rows","Rows", JOptionPane.OK_CANCEL_OPTION,null, rowChoice, rowChoice[0]);
+                if (rows == JOptionPane.CANCEL_OPTION) {
+                    mainTextArea.setText("Cancelled");
+                }
+                else {
+                    ticketOperations.generateTicket(rows, users.get(0).userId);
+                    mainTextArea.setText("Ticket created with id: " + ticketOperations.tickets.getLast().getTicketId() + "\n");
+                    mainTextArea.append("Ticket belongs to user: " + ticketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
+                    
+                    int[][] newlyCreatedTicket = ticketOperations.tickets.getLast().getRows();
+                    mainTextArea.append("Numbers of new ticket: " + "\n");
+    
+                    int rowCounter = 1;
+                    for (int i = 0; i < newlyCreatedTicket.length; i++) {
+                        mainTextArea.append(rowCounter + ": ");
+                        for (int j = 0; j < newlyCreatedTicket[i].length; j++) {
+                            mainTextArea.append(newlyCreatedTicket[i][j] + "\t");
+                        }
+                        mainTextArea.append("\n");
+                        rowCounter++;
+                    }    
+                }
+            }
+        });
+
+        // WINNING NUMBERS winningNumbersButton actionlistener
+        winningNumbersButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);
+                mainTextArea.setText("Winning numbers are: " + "\n");
+                winningRow = ticketOperations.winningRow();
+                for (int i = 0; i < winningRow.length; i++) {
+                    if (i == winningRow.length - 1) {
+                        mainTextArea.append(Integer.toString(winningRow[i]));
+                    }
+                    else {
+                        mainTextArea.append((winningRow[i] + " - "));
+                    }
+                }
+                currentWinningNumbers = winningRow;
+            }
+        });
+
+        // NEW USER newUserButtoon actionlistener
+        newUserButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(mainFrame, "TBA", "TBA", JOptionPane.DEFAULT_OPTION);
+            }
+        });
+        
+        // print all ticket IDs actionlistener
+        allTicketsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);
+                int ticketCount = 1;
+                if (ticketOperations.tickets.size() == 0) {
+                    mainTextArea.setText("No tickets in database");
+                }
+                else {
+                    for (int i = 0; i < ticketOperations.tickets.size(); i++) {
+                        mainTextArea.append("tID-" + ticketCount + ": " + ticketOperations.tickets.get(i).ticketId + "\n");
+                        ticketCount++;
+                    }
+                }
+            }
+        });
 
 
+        // add objects to mainpanel
+        mainFrame.add(mainTextArea);
+        mainFrame.add(newTicketButton);
+        mainFrame.add(winningNumbersButton);
+        mainFrame.add(newUserButton);
+        mainFrame.add(allTicketsButton);
         mainFrame.setSize(mainFrameWidth, mainFrameHeight);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //center frame on screen
-        mainFrame.setLocation((screenWidth / 2) - (mainFrameWidth/2),(screenHeight / 2) - (mainFrameHeight / 2));
-
-
-        // buttons
-        JButton newTicketButton = new JButton("New ticket");
-        JButton winningNumbersButton = new JButton("Winning numbers");
-        JButton newUserButton = new JButton("New user");
-
-        // place newTicketButton with actionlistener
-        newTicketButton.setBounds(50, 50, 150, 30);
-        newTicketButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("new ticket");
-            }
-        });
-
-        // place winningNumbersButton with actionlistener
-        winningNumbersButton.setBounds(50, 100, 150, 30);
-        winningNumbersButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("new winning numbers");
-            }
-        });
-
-        // place newUserButtoon with actionlistener
-        newUserButton.setBounds(50, 150, 150, 30);
-        newUserButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("new user");
-            }
-        });
-
-        // add objects to mainframe
-        mainFrame.add(newTicketButton);
-        mainFrame.add(winningNumbersButton);
-        mainFrame.add(newUserButton);
-
-        
-
-    }
-    public static void newTicket() {
-        System.out.println("How many ticket rows?(1-10)");
-        int rows = Integer.parseInt(scanner.nextLine());
-        ticketOperations.generateTicket(rows, users.get(0).userId);
-        System.out.println("Ticket created with id: " + ticketOperations.tickets.get(0).getTicketId());
-        System.out.println("Ticket belongs to user: " + ticketOperations.tickets.get(0).ticketBelongsToUser());
-        ticketOperations.tickets.get(0).getRows();
-    }
-
-    public static void winningTicket() {
-        System.out.println("Genrating numbers: " + winningRow.length);
-        winningRow = ticketOperations.winningRow();
-        for (int i = 0; i < winningRow.length; i++) {
-            if (i == winningRow.length - 1) {
-                System.out.print(winningRow[i]);
-            }
-            else {
-                System.out.print(winningRow[i] + " - ");
-            }
-        }
     }
 
     public static void generateUser(String userName) {

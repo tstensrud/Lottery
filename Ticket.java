@@ -10,22 +10,9 @@ public class Ticket {
         this.belongsToUser = userId;
     }
 
-    public void getRows() {
-        
-        
-        for (int i = 0; i < rows.length; i++) {
-            for (int j = 0; j < rows[i].length; j++) {
-                if (j != rows[i].length - 1) {
-                    System.out.print(rows[i][j] + " - ");    
-                }
-                else {
-                    System.out.print(rows[i][j]);
-                }
-            }
-            System.out.println("\n");
-            
-        }
-    
+    public int[][] getRows() {
+
+        return rows;
     }
 
     public int ticketBelongsToUser() {
