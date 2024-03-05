@@ -4,8 +4,8 @@ import java.util.Random;
 
 public class TicketOperations {
 
-    public static int totalPlayableNumbers = 10;
-    public static int totalNumbersPerRow = 2;
+    public static int totalPlayableNumbers = 40;
+    public static int totalNumbersPerRow = 7;
     public static int ticketId = 10000;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
 

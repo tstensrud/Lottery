@@ -2,14 +2,13 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import javax.swing.*;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.*;
 import java.util.*;
 
 
 public class Lottery {
-    public static int totaltNumbersPerRow = 2;
+    public static int totaltNumbersPerRow = TicketOperations.totalNumbersPerRow;
     public static int[] currentWinningNumbers = new int[totaltNumbersPerRow];
     public static LinkedList<User> users = new LinkedList<User>();
     public static int[] winningRow = new int[totaltNumbersPerRow];
@@ -19,7 +18,7 @@ public class Lottery {
 
         drawUi();
         // generate one generic user for testing
-        users.add(new User("Torbjørn", 111111));
+        users.add(new User("Torbjørn", 1234, 34343434, "a@b.c", "Gata til a mor"));
     }
 
     public static void drawUi() {
@@ -55,6 +54,8 @@ public class Lottery {
         findWinningTicketsButton.setBounds(50, 250, buttonLength, buttonHeight);
         JButton resetButton = new JButton("Reset");
         resetButton.setBounds(50, 300, buttonLength, buttonHeight);
+        JButton printTicketButton = new JButton("Print ticket");
+        printTicketButton.setBounds(50,350,buttonLength, buttonHeight);
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
@@ -166,7 +167,6 @@ public class Lottery {
                                 System.out.println("Winner found: " + ticketOperations.tickets.get(i).getTicketId());
                                 break;
                             }
-                            
                         }
                     }
                     if (winners.isEmpty()) {
@@ -175,6 +175,7 @@ public class Lottery {
                     else {
                         for (int i = 0; i < winners.size(); i++) {
                             mainTextArea.append("Winning ticketIDs: " + winners.get(i) + "\n");
+                            winners.clear();
                         }
                     }
                 }
@@ -191,6 +192,36 @@ public class Lottery {
                 }
             }
         });
+
+        // PRINT TICKET actionlistener
+        printTicketButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int ticketId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame, "Ticket ID", "Enter ticket ID"));
+                    mainTextArea.setText(null);
+
+                    for (int i = 0; i < TicketOperations.tickets.size(); i++) {
+                        if (TicketOperations.tickets.get(i).ticketId == ticketId) {
+                            mainTextArea.append("Ticket " + ticketId + ": \n");
+                            int[][] fetchRows = TicketOperations.tickets.get(i).getRows();
+                            for (int j = 0; j < fetchRows.length; j++) {
+                                mainTextArea.append((j+1) + ": ");
+                                for (int k = 0; k < fetchRows[j].length; k++) {
+                                    mainTextArea.append(fetchRows[j][k] + "\t");
+                                }
+                                mainTextArea.append("\n");
+                            }
+                        }
+                    }
+                }
+                catch (NumberFormatException err) {
+                    JOptionPane.showMessageDialog(mainFrame, "Only numbers in ID", "Error", JOptionPane.OK_OPTION);
+                    System.out.println("NumberFormatException " + err.getMessage());
+                }
+            }
+        });
+
+
         // add objects to mainpanel
         mainFrame.add(mainTextArea);
         mainFrame.add(newTicketButton);
@@ -199,6 +230,7 @@ public class Lottery {
         mainFrame.add(allTicketsButton);
         mainFrame.add(findWinningTicketsButton);
         mainFrame.add(resetButton);
+        mainFrame.add(printTicketButton);
         mainFrame.setSize(mainFrameWidth, mainFrameHeight);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
