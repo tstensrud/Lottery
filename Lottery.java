@@ -9,10 +9,10 @@ import java.util.*;
 
 
 public class Lottery {
-
-    public static int[] currentWinningNumbers = new int[7];
+    public static int totaltNumbersPerRow = 2;
+    public static int[] currentWinningNumbers = new int[totaltNumbersPerRow];
     public static LinkedList<User> users = new LinkedList<User>();
-    public static int[] winningRow = new int[7];
+    public static int[] winningRow = new int[totaltNumbersPerRow];
     static TicketOperations ticketOperations = new TicketOperations();
     static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
@@ -51,6 +51,10 @@ public class Lottery {
         newUserButton.setBounds(50, 150, buttonLength, buttonHeight);
         JButton allTicketsButton = new JButton("Print all ticket IDs");
         allTicketsButton.setBounds(50, 200, buttonLength, buttonHeight);
+        JButton findWinningTicketsButton = new JButton("Find winners");
+        findWinningTicketsButton.setBounds(50, 250, buttonLength, buttonHeight);
+        JButton resetButton = new JButton("Reset");
+        resetButton.setBounds(50, 300, buttonLength, buttonHeight);
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
@@ -58,26 +62,26 @@ public class Lottery {
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
                 Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
-                int rows = (Integer)JOptionPane.showInputDialog(null,"Choose number of rows","Rows", JOptionPane.OK_CANCEL_OPTION,null, rowChoice, rowChoice[0]);
+                int rows = (Integer)JOptionPane.showInputDialog(null,"Choose number of rows","Rows", JOptionPane.OK_CANCEL_OPTION,null, rowChoice, rowChoice[9]);
                 if (rows == JOptionPane.CANCEL_OPTION) {
                     mainTextArea.setText("Cancelled");
                 }
                 else {
                     ticketOperations.generateTicket(rows, users.get(0).userId);
-                    mainTextArea.setText("Ticket created with id: " + ticketOperations.tickets.getLast().getTicketId() + "\n");
-                    mainTextArea.append("Ticket belongs to user: " + ticketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
+                    mainTextArea.setText("Ticket created with id: " + TicketOperations.tickets.getLast().getTicketId() + "\n");
+                    mainTextArea.append("Ticket belongs to user: " + TicketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
                     
-                    int[][] newlyCreatedTicket = ticketOperations.tickets.getLast().getRows();
+                    int[][] newlyCreatedTicket = TicketOperations.tickets.getLast().getRows();
                     mainTextArea.append("Numbers of new ticket: " + "\n");
     
-                    int rowCounter = 1;
+                    
                     for (int i = 0; i < newlyCreatedTicket.length; i++) {
-                        mainTextArea.append(rowCounter + ": ");
+                        mainTextArea.append((i+1) + ": ");
                         for (int j = 0; j < newlyCreatedTicket[i].length; j++) {
                             mainTextArea.append(newlyCreatedTicket[i][j] + "\t");
                         }
                         mainTextArea.append("\n");
-                        rowCounter++;
+                        
                     }    
                 }
             }
@@ -87,17 +91,22 @@ public class Lottery {
         winningNumbersButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
-                mainTextArea.setText("Winning numbers are: " + "\n");
-                winningRow = ticketOperations.winningRow();
-                for (int i = 0; i < winningRow.length; i++) {
-                    if (i == winningRow.length - 1) {
-                        mainTextArea.append(Integer.toString(winningRow[i]));
-                    }
-                    else {
-                        mainTextArea.append((winningRow[i] + " - "));
-                    }
+                if (currentWinningNumbers[0] != 0) {
+                    JOptionPane.showMessageDialog(mainFrame, "A set of winning numbers already exists. Reset winnig numbers to create new numbers.", "Oops", JOptionPane.OK_OPTION);
                 }
-                currentWinningNumbers = winningRow;
+                else {
+                    mainTextArea.setText("Winning numbers are: " + "\n");
+                    winningRow = ticketOperations.winningRow();
+                    for (int i = 0; i < winningRow.length; i++) {
+                        if (i == winningRow.length - 1) {
+                            mainTextArea.append(Integer.toString(winningRow[i]));
+                        }
+                        else {
+                            mainTextArea.append((winningRow[i] + " - "));
+                        }
+                    }
+                    currentWinningNumbers = winningRow;    
+                }
             }
         });
 
@@ -112,26 +121,84 @@ public class Lottery {
         allTicketsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
-                int ticketCount = 1;
-                if (ticketOperations.tickets.size() == 0) {
-                    mainTextArea.setText("No tickets in database");
+                if (TicketOperations.tickets.size() == 0) {
+                    JOptionPane.showMessageDialog(mainFrame, "No tickets in databsase.", "Oops", JOptionPane.OK_OPTION);
                 }
                 else {
-                    for (int i = 0; i < ticketOperations.tickets.size(); i++) {
-                        mainTextArea.append("tID-" + ticketCount + ": " + ticketOperations.tickets.get(i).ticketId + "\n");
-                        ticketCount++;
+                    for (int i = 0; i < TicketOperations.tickets.size(); i++) {
+                        mainTextArea.append("tID-" + (i+1) + ": " + TicketOperations.tickets.get(i).ticketId + "\n");
                     }
                 }
             }
         });
 
+        // FIND WINNING TICKETS actionlistener
+        findWinningTicketsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);                
+                if (winningRow[0] == 0) {
+                    JOptionPane.showMessageDialog(mainFrame, "No winning numbers are drawn yet.", "Oops", JOptionPane.OK_OPTION);
+                }
+                else {
+                    mainTextArea.setText("Winning numbers are: \n");
+                    for (int i = 0; i < winningRow.length; i++) {
+                        mainTextArea.append(Integer.toString(winningRow[i]) + "\t");
+                    }
+                    
+                    mainTextArea.append("\n");
 
+                    // Arraylist where winning ticketIDs are added
+                    ArrayList<String> winners = new ArrayList<>();
+
+                    for (int i = 0; i < TicketOperations.tickets.size(); i++) {
+
+                        // fetch rows of ticket i
+                        int[][] fetchRows = TicketOperations.tickets.get(i).getRows();
+                        
+                        // check if ticket i has winning row
+                        outerloop:
+                        for (int j = 0; j < fetchRows.length; j++) {
+                            for (int k = 0; k < fetchRows[j].length; k++) {
+                                if (fetchRows[j][k] != winningRow[k]) {
+                                    break outerloop; 
+                                }
+                                winners.add(Integer.toString(ticketOperations.tickets.get(i).getTicketId()));
+                                System.out.println("Winner found: " + ticketOperations.tickets.get(i).getTicketId());
+                                break;
+                            }
+                            
+                        }
+                    }
+                    if (winners.isEmpty()) {
+                        mainTextArea.append("No winners");
+                    }
+                    else {
+                        for (int i = 0; i < winners.size(); i++) {
+                            mainTextArea.append("Winning ticketIDs: " + winners.get(i) + "\n");
+                        }
+                    }
+                }
+            }
+        });
+
+        // RESET BUTTON actionlistener
+        resetButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);
+                JOptionPane.showMessageDialog(mainFrame, "Winning numbers reset", "Reset", JOptionPane.OK_OPTION);
+                for (int i= 0; i< winningRow.length; i++) {
+                    winningRow[i] = 0;
+                }
+            }
+        });
         // add objects to mainpanel
         mainFrame.add(mainTextArea);
         mainFrame.add(newTicketButton);
         mainFrame.add(winningNumbersButton);
         mainFrame.add(newUserButton);
         mainFrame.add(allTicketsButton);
+        mainFrame.add(findWinningTicketsButton);
+        mainFrame.add(resetButton);
         mainFrame.setSize(mainFrameWidth, mainFrameHeight);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
