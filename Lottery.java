@@ -1,5 +1,4 @@
 import java.util.LinkedList;
-import java.util.Scanner;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -12,36 +11,71 @@ public class Lottery {
     public static int[] currentWinningNumbers = new int[totaltNumbersPerRow];
     public static LinkedList<User> users = new LinkedList<User>();
     public static int[] winningRow = new int[totaltNumbersPerRow];
-    static TicketOperations ticketOperations = new TicketOperations();
-    static Scanner scanner = new Scanner(System.in);
+    private static TicketOperations ticketOperations = new TicketOperations();
     public static void main(String[] args) {
 
         drawUi();
         // generate one generic user for testing
-        users.add(new User("Torbjørn", 1234, 34343434, "a@b.c", "Gata til a mor"));
+        users.add(new User("Torbjørn", 1234, "34343434", "a@b.c", "Gata til a mor"));
     }
 
     public static void drawUi() {
+
+        // dimensions of buttons and textfields
         int buttonLength = 150;
         int buttonHeight = 30;
-        // main frame
-        JFrame mainFrame = new JFrame("Lottery");
-        int mainFrameWidth = 1024;
-        int mainFrameHeight = 768;
+        int textFieldHeight = 25;
+        int textFieldLength = 250;
 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int screenWidth = (int)screenSize.getWidth();
         int screenHeight = (int)screenSize.getHeight();
         
+        // main frame
+        JFrame mainFrame = new JFrame("Lottery");
+        final int mainFrameWidth = 1024;
+        final int mainFrameHeight = 768;
 
-        //center frame on screen
-        mainFrame.setLocation((screenWidth / 2) - (mainFrameWidth/2),(screenHeight / 2) - (mainFrameHeight / 2));
+        // Add user frame
+        JFrame addUserFrame = new JFrame("Add new user");
+        final int addUserFrameWidth = 500;
+        final int addUserFrameHeight = 500;
+        
+        //center frames on screen
+        mainFrame.setLocation((screenWidth / 2) - (addUserFrameWidth/2),(screenHeight / 2) - (addUserFrameHeight / 2));
+        addUserFrame.setLocation((screenWidth / 2) - (addUserFrameWidth/2),(screenHeight / 2) - (addUserFrameHeight / 2));
+
+        // labels mainframe
+
+        // labeles "add new user"-frame
+        JLabel userNameLabel = new JLabel ("Username");
+        userNameLabel.setBounds(10,50,100,25);
+        JLabel emailLabel = new JLabel ("E-mail");
+        emailLabel.setBounds(10,100,100,25);
+        JLabel adressLabel = new JLabel("Adress");
+        adressLabel.setBounds(10,150,100,25);
+        JLabel phoneLabel = new JLabel("Phone number");
+        phoneLabel.setBounds(10,200,100,25);
 
         // textareas
         JTextArea mainTextArea = new JTextArea("Output");
         mainTextArea.setBounds(300, 50, 600, 300);
 
-        // buttons
+        // textfields "add new user"-frame
+        JTextField userUserNameTF = new JTextField();
+        userUserNameTF.setBounds(100, 50, textFieldLength, textFieldHeight);
+        JTextField userEmailTF = new JTextField();
+        userEmailTF.setBounds(100, 100, textFieldLength, textFieldHeight);
+        JTextField userAdressTF = new JTextField();
+        userAdressTF.setBounds(100, 150, textFieldLength, textFieldHeight);
+        JTextField userPhoneTF = new JTextField();
+        userPhoneTF.setBounds(100, 200, textFieldLength, textFieldHeight);
+
+        // buttons "add new user"-frame
+        JButton addNewUserButton = new JButton("Add new user");
+        addNewUserButton.setBounds(25,250,buttonLength, buttonHeight);
+
+        // buttons mainframe
         JButton newTicketButton = new JButton("New ticket");
         newTicketButton.setBounds(50, 50, buttonLength, buttonHeight);
         JButton winningNumbersButton = new JButton("Winning numbers");
@@ -59,7 +93,6 @@ public class Lottery {
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
                 Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
@@ -74,7 +107,6 @@ public class Lottery {
                     
                     int[][] newlyCreatedTicket = TicketOperations.tickets.getLast().getRows();
                     mainTextArea.append("Numbers of new ticket: " + "\n");
-    
                     
                     for (int i = 0; i < newlyCreatedTicket.length; i++) {
                         mainTextArea.append((i+1) + ": ");
@@ -82,7 +114,6 @@ public class Lottery {
                             mainTextArea.append(newlyCreatedTicket[i][j] + "\t");
                         }
                         mainTextArea.append("\n");
-                        
                     }    
                 }
             }
@@ -114,7 +145,7 @@ public class Lottery {
         // NEW USER newUserButtoon actionlistener
         newUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(mainFrame, "TBA", "TBA", JOptionPane.DEFAULT_OPTION);
+                addUserFrame.setVisible(true);
             }
         });
         
@@ -221,6 +252,19 @@ public class Lottery {
             }
         });
 
+        // ADD NEW USER button
+        addNewUserButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String userName = userUserNameTF.getText();
+                String userPhone = userPhoneTF.getText();
+                String userEmail = userEmailTF.getText();
+                String userAdress = userAdressTF.getText();
+
+                users.add(new User(userName, (users.size() + 1), userPhone, userEmail, userAdress));
+                JOptionPane.showMessageDialog(addUserFrame, "User " + userName + " added.", "User added", JOptionPane.DEFAULT_OPTION);
+                
+            }
+        });
 
         // add objects to mainpanel
         mainFrame.add(mainTextArea);
@@ -236,8 +280,23 @@ public class Lottery {
         mainFrame.setResizable(false);
         mainFrame.setVisible(true);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
 
+        // add objects to "add new user" frame
+        addUserFrame.add(userUserNameTF);
+        addUserFrame.add(userEmailTF);
+        addUserFrame.add(userAdressTF);
+        addUserFrame.add(userPhoneTF);
+        addUserFrame.add(userNameLabel);
+        addUserFrame.add(emailLabel);
+        addUserFrame.add(adressLabel);
+        addUserFrame.add(phoneLabel);
+        addUserFrame.add(addNewUserButton);
+        addUserFrame.setSize(addUserFrameWidth, addUserFrameHeight);
+        addUserFrame.setLayout(null);
+        addUserFrame.setResizable(false);
+        addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+    
     public static void generateUser(String userName) {
 
     }
