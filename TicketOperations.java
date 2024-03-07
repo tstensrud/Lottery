@@ -79,13 +79,13 @@ public class TicketOperations {
             availableNumbers.add(i+1);
         }
 
-
         for (int i = 0; i < winningRow.length; i++) {
             int nextNumber;
             if (i == 0) {
                 nextNumber = generateRandomNumber(false, totalPlayableNumbers);
                 winningRow[i] = availableNumbers.get(nextNumber);
                 availableNumbers.remove(nextNumber);
+
             }
             else {
                 nextNumber = generateRandomNumber(false, totalPlayableNumbers - i);
@@ -93,7 +93,6 @@ public class TicketOperations {
                 availableNumbers.remove(nextNumber);
             }
         }
-
         sortRow(winningRow);
         return winningRow;
     }   

@@ -11,7 +11,6 @@ public class Ticket {
     }
 
     public int[][] getRows() {
-
         return rows;
     }
 

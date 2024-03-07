@@ -1,4 +1,7 @@
 import java.util.LinkedList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -255,14 +258,25 @@ public class Lottery {
         // ADD NEW USER button
         addNewUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+
                 String userName = userUserNameTF.getText();
                 String userPhone = userPhoneTF.getText();
                 String userEmail = userEmailTF.getText();
                 String userAdress = userAdressTF.getText();
 
-                users.add(new User(userName, (users.size() + 1), userPhone, userEmail, userAdress));
-                JOptionPane.showMessageDialog(addUserFrame, "User " + userName + " added.", "User added", JOptionPane.DEFAULT_OPTION);
+                // test that email follows standard formation: name@provider.domain
+                String emailPattern = "^[\\w.-]+@[-\\w]+[.]+[\\w]{2,4}$";
+                Pattern regExPattern = Pattern.compile(emailPattern);
+                Matcher regExMatcher = regExPattern.matcher(userEmail);
                 
+                if (regExMatcher.find() == false) {
+                    JOptionPane.showMessageDialog(addUserFrame, "Error in email-format. name@provider.domain", "Error", JOptionPane.DEFAULT_OPTION);
+                      
+                }
+                else {
+                    users.add(new User(userName, (users.size() + 1), userPhone, userEmail, userAdress));
+                    JOptionPane.showMessageDialog(addUserFrame, "User " + userName + " added.", "User added", JOptionPane.DEFAULT_OPTION);
+                }
             }
         });
 
