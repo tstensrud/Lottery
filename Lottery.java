@@ -14,7 +14,6 @@ public class Lottery {
     public static int[] currentWinningNumbers = new int[totaltNumbersPerRow];
     public static LinkedList<User> users = new LinkedList<User>();
     public static int[] winningRow = new int[totaltNumbersPerRow];
-    private static TicketOperations ticketOperations = new TicketOperations();
     public static void main(String[] args) {
 
         drawUi();
@@ -104,7 +103,7 @@ public class Lottery {
                     mainTextArea.setText("Cancelled");
                 }
                 else {
-                    ticketOperations.generateTicket(rows, users.get(0).userId);
+                    TicketOperations.generateTicket(rows, users.get(0).userId);
                     mainTextArea.setText("Ticket created with id: " + TicketOperations.tickets.getLast().getTicketId() + "\n");
                     mainTextArea.append("Ticket belongs to user: " + TicketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
                     
@@ -131,7 +130,7 @@ public class Lottery {
                 }
                 else {
                     mainTextArea.setText("Winning numbers are: " + "\n");
-                    winningRow = ticketOperations.winningRow();
+                    winningRow = TicketOperations.createWinningNumbers();
                     for (int i = 0; i < winningRow.length; i++) {
                         if (i == winningRow.length - 1) {
                             mainTextArea.append(Integer.toString(winningRow[i]));
@@ -179,37 +178,16 @@ public class Lottery {
                     for (int i = 0; i < winningRow.length; i++) {
                         mainTextArea.append(Integer.toString(winningRow[i]) + "\t");
                     }
-                    
                     mainTextArea.append("\n");
+                    
+                    TicketOperations.findWinningTickets(winningRow);
 
-                    // Arraylist where winning ticketIDs are added
-                    ArrayList<String> winners = new ArrayList<>();
-
-                    for (int i = 0; i < TicketOperations.tickets.size(); i++) {
-
-                        // fetch rows of ticket i
-                        int[][] fetchRows = TicketOperations.tickets.get(i).getRows();
-                        
-                        // check if ticket i has winning row
-                        outerloop:
-                        for (int j = 0; j < fetchRows.length; j++) {
-                            for (int k = 0; k < fetchRows[j].length; k++) {
-                                if (fetchRows[j][k] != winningRow[k]) {
-                                    break outerloop; 
-                                }
-                                winners.add(Integer.toString(ticketOperations.tickets.get(i).getTicketId()));
-                                System.out.println("Winner found: " + ticketOperations.tickets.get(i).getTicketId());
-                                break;
-                            }
-                        }
-                    }
-                    if (winners.isEmpty()) {
-                        mainTextArea.append("No winners");
+                    if (TicketOperations.winningTickets.isEmpty()) {
+                        mainTextArea.append("No winners this round.");
                     }
                     else {
-                        for (int i = 0; i < winners.size(); i++) {
-                            mainTextArea.append("Winning ticketIDs: " + winners.get(i) + "\n");
-                            winners.clear();
+                        for (int i = 0; i < TicketOperations.winningTickets.size(); i++) {
+                            mainTextArea.append("Winner: " + TicketOperations.winningTickets.get(i) + "\n");
                         }
                     }
                 }

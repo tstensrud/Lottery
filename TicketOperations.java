@@ -4,13 +4,14 @@ import java.util.Random;
 
 public class TicketOperations {
 
-    public static int totalPlayableNumbers = 40;
-    public static int totalNumbersPerRow = 7;
+    public static int totalPlayableNumbers = 5;
+    public static int totalNumbersPerRow = 2;
     public static int ticketId = 10000;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
+    public static ArrayList<Integer> winningTickets = new ArrayList<>();
 
     // Generate a ticket with n-amount of rows
-    public void generateTicket(int rows, int userId) {
+    public static void generateTicket(int rows, int userId) {
 
         int[][] ticket = new int[rows][];
         ticketId++;
@@ -23,8 +24,10 @@ public class TicketOperations {
 
     }
     
-    // generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
-    public int[] generateTicketRow() {
+    /* generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
+     * This has error. Will generate duplicate numbers. fix.
+     */
+    private static int[] generateTicketRow() {
         int[] row = new int[totalNumbersPerRow];
         for (int i = 0; i < totalNumbersPerRow; i++) {
             int number = generateRandomNumber(true, totalPlayableNumbers);
@@ -39,9 +42,10 @@ public class TicketOperations {
     }
 
     /* generate a random number
-    set forTicket true if the numbers are to be from 1 to max
-    set forTicket false if the numbers are to be from 0 to max */
-    public int generateRandomNumber(boolean forTicket, int max) {
+    *  set forTicket true if the numbers are to be from 1 to max
+    *  set forTicket false if the numbers are to be from 0 to max
+    */
+    private static int generateRandomNumber(boolean forTicket, int max) {
         Random ran = new Random();
         int number;
         if (forTicket) {
@@ -54,7 +58,7 @@ public class TicketOperations {
     }
 
     // sort row in ascending order
-    private int[] sortRow(int[] row) {
+    private static int[] sortRow(int[] row) {
         int temp = 0;
         for (int i = 0; i < row.length; i++){
             for (int j = i+1; j < row.length; j++) {
@@ -68,9 +72,10 @@ public class TicketOperations {
         return row;        
     }
 
-    /* Generate a winning row. 
-    For each number nextNumber thats drawed, it is removed from pool of availableNumbers */
-    public int[] winningRow() {
+    /* Generate winning numbers
+    *  For each number nextNumber thats drawed, it is removed from pool of availableNumbers
+    */
+    public static int[] createWinningNumbers() {
         ArrayList<Integer> availableNumbers = new ArrayList<>();
         int[] winningRow = new int[totalNumbersPerRow];
 
@@ -96,4 +101,29 @@ public class TicketOperations {
         sortRow(winningRow);
         return winningRow;
     }   
+
+    /*
+     * Will check winningRow up against all ticket-rows and return ID of ticket if loop "j" finishes
+     * Returns an arraylist of winning ticketIDs
+     */
+    public static ArrayList<Integer> findWinningTickets(int[] winningRow) {
+        for(int i = 0; i < tickets.size(); i++) {
+            
+            // Search through ticket i
+            newTicket:
+            for (int j = 0; j < tickets.get(i).getRows().length; j++) {
+                for (int k = 0; k < totalNumbersPerRow; k++) {
+                    if(tickets.get(i).getRows()[j][k] != winningRow[k]) {
+                      break; // if match is not found, break out of loop and go to next row
+                    }
+                    // if k-loop completes a winning row is found and loop breaks, continuing to next ticket i.
+                    if (k == totalNumbersPerRow-1) {
+                        winningTickets.add(tickets.get(i).getTicketId());
+                        break newTicket;
+                    }
+                }
+            }
+        }
+        return winningTickets;
+    }
 }
