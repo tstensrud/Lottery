@@ -4,8 +4,8 @@ import java.util.Random;
 
 public class TicketOperations {
 
-    public static int totalPlayableNumbers = 5;
-    public static int totalNumbersPerRow = 2;
+    public static int totalPlayableNumbers = 38;
+    public static int totalNumbersPerRow = 8;
     public static int ticketId = 10000;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
     public static ArrayList<Integer> winningTickets = new ArrayList<>();
@@ -24,24 +24,40 @@ public class TicketOperations {
 
     }
     
-    /* generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
-     * This has error. Will generate duplicate numbers. fix.
-     */
+    // generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
+     
     private static int[] generateTicketRow() {
         int[] row = new int[totalNumbersPerRow];
+        int number;
         for (int i = 0; i < totalNumbersPerRow; i++) {
-            int number = generateRandomNumber(true, totalPlayableNumbers);
+            number = generateRandomNumber(true, totalPlayableNumbers);
+            
             for (int j = 0; j < totalNumbersPerRow; j++) {
-                if (row[j] == number) {
+                while (searchForDuplicateNumberInRow(row, number)) {
                     number = generateRandomNumber(true, totalPlayableNumbers);
                 }
             }
             row[i] = number;
         }
+        /*
+        for(int i = 1; i < row.length; i++) {
+                if (row[i-1] == row[i]) {
+                    System.out.println("DUPLICATE");
+                }
+        }*/
         return sortRow(row);
     }
 
-    /* generate a random number
+    private static boolean searchForDuplicateNumberInRow(int[] row, int number) {
+        for (int i = 0; i < row.length; i++) {
+            if (row[i] == number) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /* 
+    *  generate a random number
     *  set forTicket true if the numbers are to be from 1 to max
     *  set forTicket false if the numbers are to be from 0 to max
     */

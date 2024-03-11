@@ -19,6 +19,9 @@ public class Lottery {
         drawUi();
         // generate one generic user for testing
         users.add(new User("Torbjørn", 1234, "34343434", "a@b.c", "Gata til a mor"));
+        for (int i = 0; i < 100; i++) {
+            TicketOperations.generateTicket(10, 123456);
+        }
     }
 
     public static void drawUi() {
@@ -37,14 +40,14 @@ public class Lottery {
         JFrame mainFrame = new JFrame("Lottery");
         final int mainFrameWidth = 1024;
         final int mainFrameHeight = 768;
-
+        
         // Add user frame
         JFrame addUserFrame = new JFrame("Add new user");
         final int addUserFrameWidth = 500;
         final int addUserFrameHeight = 500;
         
         //center frames on screen
-        mainFrame.setLocation((screenWidth / 2) - (addUserFrameWidth/2),(screenHeight / 2) - (addUserFrameHeight / 2));
+        mainFrame.setLocation((screenWidth / 2) - (mainFrameWidth/2),(screenHeight / 2) - (mainFrameHeight / 2));
         addUserFrame.setLocation((screenWidth / 2) - (addUserFrameWidth/2),(screenHeight / 2) - (addUserFrameHeight / 2));
 
         // labels mainframe
@@ -61,7 +64,9 @@ public class Lottery {
 
         // textareas
         JTextArea mainTextArea = new JTextArea("Output");
-        mainTextArea.setBounds(300, 50, 600, 300);
+        //mainTextArea.setBounds(300, 50, 600, 300);
+        JScrollPane mainTextAreaScroll = new JScrollPane(mainTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        mainTextAreaScroll.setBounds(210,50,750,300);
 
         // textfields "add new user"-frame
         JTextField userUserNameTF = new JTextField();
@@ -197,11 +202,16 @@ public class Lottery {
         // RESET BUTTON actionlistener
         resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mainTextArea.setText(null);
-                JOptionPane.showMessageDialog(mainFrame, "Winning numbers reset", "Reset", JOptionPane.OK_OPTION);
-                for (int i= 0; i< winningRow.length; i++) {
-                    winningRow[i] = 0;
+                int confirmReset = JOptionPane.showConfirmDialog(mainFrame, "Do you want to reset?", "RESET", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (confirmReset == JOptionPane.YES_OPTION) {
+                    mainTextArea.setText(null);
+                    fullReset();
+                    mainTextArea.append("Game is reset.");
                 }
+                else if (confirmReset == JOptionPane.NO_OPTION) {
+                    JOptionPane.showMessageDialog(mainFrame, "Cancelled", "Cancelled", JOptionPane.OK_OPTION);
+                }
+
             }
         });
 
@@ -213,7 +223,7 @@ public class Lottery {
                     mainTextArea.setText(null);
 
                     for (int i = 0; i < TicketOperations.tickets.size(); i++) {
-                        if (TicketOperations.tickets.get(i).ticketId == ticketId) {
+                        if (TicketOperations.tickets.get(i).getTicketId() == ticketId) {
                             mainTextArea.append("Ticket " + ticketId + ": \n");
                             int[][] fetchRows = TicketOperations.tickets.get(i).getRows();
                             for (int j = 0; j < fetchRows.length; j++) {
@@ -223,8 +233,10 @@ public class Lottery {
                                 }
                                 mainTextArea.append("\n");
                             }
+                            return;
                         }
                     }
+                    JOptionPane.showMessageDialog(mainFrame, "Ticket ID " + ticketId + " not found!", "Error", JOptionPane.OK_OPTION);
                 }
                 catch (NumberFormatException err) {
                     JOptionPane.showMessageDialog(mainFrame, "Only numbers in ID", "Error", JOptionPane.OK_OPTION);
@@ -259,7 +271,8 @@ public class Lottery {
         });
 
         // add objects to mainpanel
-        mainFrame.add(mainTextArea);
+        //mainFrame.add(mainTextArea);
+        mainFrame.add(mainTextAreaScroll);
         mainFrame.add(newTicketButton);
         mainFrame.add(winningNumbersButton);
         mainFrame.add(newUserButton);
@@ -289,6 +302,16 @@ public class Lottery {
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     
+    private static void fullReset() {
+        // set winning numbers to 0
+        for (int i= 0; i< winningRow.length; i++) {
+            winningRow[i] = 0;
+        }
+
+        // put current tickets into archive and set current ticket to 0
+
+
+    }
     public static void generateUser(String userName) {
 
     }
