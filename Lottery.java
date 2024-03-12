@@ -12,13 +12,12 @@ import java.util.*;
 public class Lottery {
     public static int totaltNumbersPerRow = TicketOperations.totalNumbersPerRow;
     public static int[] currentWinningNumbers = new int[totaltNumbersPerRow];
-    public static LinkedList<User> users = new LinkedList<User>();
     public static int[] winningRow = new int[totaltNumbersPerRow];
     public static void main(String[] args) {
 
         drawUi();
         // generate one generic user for testing
-        users.add(new User("Torbjørn", 1234, "34343434", "a@b.c", "Gata til a mor"));
+        UserOperations.users.add(new User("Torbjørn", 1234, "34343434", "a@b.c", "Gata til a mor"));
         for (int i = 0; i < 100; i++) {
             TicketOperations.generateTicket(10, 123456);
         }
@@ -38,17 +37,17 @@ public class Lottery {
         
         // main frame
         JFrame mainFrame = new JFrame("Lottery");
-        final int mainFrameWidth = 1024;
-        final int mainFrameHeight = 768;
+        final int MAIN_FRAME_WIDTH = 1024;
+        final int MAIN_FRAME_HEIGHT = 768;
         
         // Add user frame
         JFrame addUserFrame = new JFrame("Add new user");
-        final int addUserFrameWidth = 500;
-        final int addUserFrameHeight = 500;
+        final int ADD_USER_FRAME_WIDTH = 500;
+        final int ADD_USER_FRAME_HEIGHT = 500;
         
         //center frames on screen
-        mainFrame.setLocation((screenWidth / 2) - (mainFrameWidth/2),(screenHeight / 2) - (mainFrameHeight / 2));
-        addUserFrame.setLocation((screenWidth / 2) - (addUserFrameWidth/2),(screenHeight / 2) - (addUserFrameHeight / 2));
+        mainFrame.setLocation((screenWidth / 2) - (MAIN_FRAME_WIDTH/2),(screenHeight / 2) - (MAIN_FRAME_HEIGHT / 2));
+        addUserFrame.setLocation((screenWidth / 2) - (ADD_USER_FRAME_WIDTH/2),(screenHeight / 2) - (ADD_USER_FRAME_HEIGHT / 2));
 
         // labels mainframe
 
@@ -103,25 +102,44 @@ public class Lottery {
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
                 Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
-                int rows = (Integer)JOptionPane.showInputDialog(null,"Choose number of rows","Rows", JOptionPane.OK_CANCEL_OPTION,null, rowChoice, rowChoice[9]);
-                if (rows == JOptionPane.CANCEL_OPTION) {
-                    mainTextArea.setText("Cancelled");
+                int userId;
+                int rows;
+                try {
+                    userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame,"Enter user-ID","UserID", JOptionPane.OK_CANCEL_OPTION));
+                    if (userId == JOptionPane.CANCEL_OPTION) {
+                        mainTextArea.setText("Cancelled");
+                        return;
+                    }
+                    if (UserOperations.findUserID(userId) == false) {
+                        JOptionPane.showMessageDialog(mainFrame, "User-ID not found", "Error", JOptionPane.OK_OPTION);
+                        return;
+                    }
+                    rows = (Integer)JOptionPane.showInputDialog(mainFrame,"Choose number of rows","Rows", JOptionPane.OK_CANCEL_OPTION,null, rowChoice, rowChoice[9]);
+                    if (rows == JOptionPane.CANCEL_OPTION) {
+                        mainTextArea.setText("Cancelled");
+                    }
+                    else {
+                        mainTextArea.setText("Ticket created with id: " + TicketOperations.tickets.getLast().getTicketId() + "\n");
+                        mainTextArea.append("Ticket belongs to user: " + TicketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
+                        
+                        int[][] newlyCreatedTicket = TicketOperations.tickets.getLast().getRows();
+                        mainTextArea.append("Numbers of new ticket: " + "\n");
+                        
+                        for (int i = 0; i < newlyCreatedTicket.length; i++) {
+                            mainTextArea.append((i+1) + ": ");
+                            for (int j = 0; j < newlyCreatedTicket[i].length; j++) {
+                                mainTextArea.append(newlyCreatedTicket[i][j] + "\t");
+                            }
+                            mainTextArea.append("\n");
+                        }    
+                    }
+                    TicketOperations.generateTicket(rows, userId);
+                
                 }
-                else {
-                    TicketOperations.generateTicket(rows, users.get(0).userId);
-                    mainTextArea.setText("Ticket created with id: " + TicketOperations.tickets.getLast().getTicketId() + "\n");
-                    mainTextArea.append("Ticket belongs to user: " + TicketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
-                    
-                    int[][] newlyCreatedTicket = TicketOperations.tickets.getLast().getRows();
-                    mainTextArea.append("Numbers of new ticket: " + "\n");
-                    
-                    for (int i = 0; i < newlyCreatedTicket.length; i++) {
-                        mainTextArea.append((i+1) + ": ");
-                        for (int j = 0; j < newlyCreatedTicket[i].length; j++) {
-                            mainTextArea.append(newlyCreatedTicket[i][j] + "\t");
-                        }
-                        mainTextArea.append("\n");
-                    }    
+                catch (NumberFormatException err) {
+                    JOptionPane.showMessageDialog(mainFrame, "Only numbers in user-id", "Error", JOptionPane.OK_OPTION);
+                    System.out.println("NumberFormatException " + err.getMessage());
+                
                 }
             }
         });
@@ -161,7 +179,7 @@ public class Lottery {
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
                 if (TicketOperations.tickets.size() == 0) {
-                    JOptionPane.showMessageDialog(mainFrame, "No tickets in databsase.", "Oops", JOptionPane.OK_OPTION);
+                    JOptionPane.showMessageDialog(mainFrame, "No active tickets in databsase.", "Oops", JOptionPane.OK_OPTION);
                 }
                 else {
                     for (int i = 0; i < TicketOperations.tickets.size(); i++) {
@@ -202,7 +220,7 @@ public class Lottery {
         // RESET BUTTON actionlistener
         resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int confirmReset = JOptionPane.showConfirmDialog(mainFrame, "Do you want to reset?", "RESET", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                int confirmReset = JOptionPane.showConfirmDialog(mainFrame, "Do you want to reset? This is not undoable!", "RESET", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (confirmReset == JOptionPane.YES_OPTION) {
                     mainTextArea.setText(null);
                     fullReset();
@@ -264,8 +282,12 @@ public class Lottery {
                       
                 }
                 else {
-                    users.add(new User(userName, (users.size() + 1), userPhone, userEmail, userAdress));
+                    generateUser(userName, (UserOperations.users.size() + 1), userPhone, userEmail, userAdress);
                     JOptionPane.showMessageDialog(addUserFrame, "User " + userName + " added.", "User added", JOptionPane.DEFAULT_OPTION);
+                    userUserNameTF.setText(null);
+                    userPhoneTF.setText(null);
+                    userEmailTF.setText(null);
+                    userAdressTF.setText(null);
                 }
             }
         });
@@ -280,7 +302,7 @@ public class Lottery {
         mainFrame.add(findWinningTicketsButton);
         mainFrame.add(resetButton);
         mainFrame.add(printTicketButton);
-        mainFrame.setSize(mainFrameWidth, mainFrameHeight);
+        mainFrame.setSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
         mainFrame.setVisible(true);
@@ -296,7 +318,7 @@ public class Lottery {
         addUserFrame.add(adressLabel);
         addUserFrame.add(phoneLabel);
         addUserFrame.add(addNewUserButton);
-        addUserFrame.setSize(addUserFrameWidth, addUserFrameHeight);
+        addUserFrame.setSize(ADD_USER_FRAME_WIDTH, ADD_USER_FRAME_HEIGHT);
         addUserFrame.setLayout(null);
         addUserFrame.setResizable(false);
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -308,11 +330,16 @@ public class Lottery {
             winningRow[i] = 0;
         }
 
-        // put current tickets into archive and set current ticket to 0
+        // put current active tickets into archive
+        for (int i = 0; i < TicketOperations.tickets.size(); i++) {
+            TicketOperations.archivedTickets.add(TicketOperations.tickets.get(i));
+        }
 
-
+        TicketOperations.tickets.clear(); // empty active tickets
     }
-    public static void generateUser(String userName) {
 
+    // add new user
+    public static void generateUser(String userName, int userId, String userPhone, String userEmail, String userAdress) {
+        UserOperations.users.add(new User(userName, userId, userPhone, userEmail, userAdress));
     }
 }

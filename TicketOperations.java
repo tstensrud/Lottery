@@ -8,7 +8,8 @@ public class TicketOperations {
     public static int totalNumbersPerRow = 8;
     public static int ticketId = 10000;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
-    public static ArrayList<Integer> winningTickets = new ArrayList<>();
+    public static LinkedList<Ticket> archivedTickets = new LinkedList<Ticket>();
+    public static ArrayList<Integer> winningTickets = new ArrayList<Integer>();
 
     // Generate a ticket with n-amount of rows
     public static void generateTicket(int rows, int userId) {
