@@ -1,4 +1,3 @@
-import java.util.LinkedList;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -6,8 +5,6 @@ import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.*;
-import java.util.*;
-
 
 public class Lottery {
     public static int totaltNumbersPerRow = TicketOperations.totalNumbersPerRow;
@@ -19,7 +16,7 @@ public class Lottery {
         // generate one generic user for testing
         UserOperations.users.add(new User("Torbjørn", 1234, "34343434", "a@b.c", "Gata til a mor"));
         for (int i = 0; i < 100; i++) {
-            TicketOperations.generateTicket(10, 123456);
+            TicketOperations.generateTicket(10, 1234);
         }
     }
 
@@ -96,6 +93,8 @@ public class Lottery {
         resetButton.setBounds(50, 300, buttonLength, buttonHeight);
         JButton printTicketButton = new JButton("Print ticket");
         printTicketButton.setBounds(50,350,buttonLength, buttonHeight);
+        JButton printUserIdsButton = new JButton("Print all user IDs");
+        printUserIdsButton.setBounds(50, 400, buttonLength, buttonHeight);
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
@@ -104,23 +103,20 @@ public class Lottery {
                 Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
                 int userId;
                 int rows;
+                userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame,"Enter user-ID","UserID", JOptionPane.OK_CANCEL_OPTION));
+                
+                if (UserOperations.findUserID(userId) == false) {
+                    JOptionPane.showMessageDialog(mainFrame, "User-ID not found", "Error", JOptionPane.OK_OPTION);
+                    return;
+                }
                 try {
-                    userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame,"Enter user-ID","UserID", JOptionPane.OK_CANCEL_OPTION));
-                    if (userId == JOptionPane.CANCEL_OPTION) {
-                        mainTextArea.setText("Cancelled");
-                        return;
-                    }
-                    if (UserOperations.findUserID(userId) == false) {
-                        JOptionPane.showMessageDialog(mainFrame, "User-ID not found", "Error", JOptionPane.OK_OPTION);
-                        return;
-                    }
                     rows = (Integer)JOptionPane.showInputDialog(mainFrame,"Choose number of rows","Rows", JOptionPane.OK_CANCEL_OPTION,null, rowChoice, rowChoice[9]);
                     if (rows == JOptionPane.CANCEL_OPTION) {
                         mainTextArea.setText("Cancelled");
                     }
                     else {
                         mainTextArea.setText("Ticket created with id: " + TicketOperations.tickets.getLast().getTicketId() + "\n");
-                        mainTextArea.append("Ticket belongs to user: " + TicketOperations.tickets.getLast().ticketBelongsToUser() + "\n");
+                        mainTextArea.append("Ticket belongs to user: " + UserOperations.returnUserObject(userId).getUserId() + "\n");
                         
                         int[][] newlyCreatedTicket = TicketOperations.tickets.getLast().getRows();
                         mainTextArea.append("Numbers of new ticket: " + "\n");
@@ -282,12 +278,23 @@ public class Lottery {
                       
                 }
                 else {
-                    generateUser(userName, (UserOperations.users.size() + 1), userPhone, userEmail, userAdress);
+                    UserOperations.addNewUser(userName, (UserOperations.users.size() + 1001), userPhone, userEmail, userAdress);
                     JOptionPane.showMessageDialog(addUserFrame, "User " + userName + " added.", "User added", JOptionPane.DEFAULT_OPTION);
                     userUserNameTF.setText(null);
                     userPhoneTF.setText(null);
                     userEmailTF.setText(null);
                     userAdressTF.setText(null);
+                }
+            }
+        });
+
+        // print user ID
+        printUserIdsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);
+                int[] userIds = UserOperations.returnUserIDs();
+                for (int i = 0; i < userIds.length; i++) {
+                    mainTextArea.append("UID-" + i + ": " + userIds[i] + "\n");
                 }
             }
         });
@@ -302,6 +309,7 @@ public class Lottery {
         mainFrame.add(findWinningTicketsButton);
         mainFrame.add(resetButton);
         mainFrame.add(printTicketButton);
+        mainFrame.add(printUserIdsButton);
         mainFrame.setSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
@@ -336,10 +344,5 @@ public class Lottery {
         }
 
         TicketOperations.tickets.clear(); // empty active tickets
-    }
-
-    // add new user
-    public static void generateUser(String userName, int userId, String userPhone, String userEmail, String userAdress) {
-        UserOperations.users.add(new User(userName, userId, userPhone, userEmail, userAdress));
     }
 }
