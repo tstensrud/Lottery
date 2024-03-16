@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
-public class TicketOperations {
+public abstract class TicketOperations {
 
     public static int totalPlayableNumbers = 38;
     public static int totalNumbersPerRow = 8;
@@ -40,12 +40,6 @@ public class TicketOperations {
             }
             row[i] = number;
         }
-        /*
-        for(int i = 1; i < row.length; i++) {
-                if (row[i-1] == row[i]) {
-                    System.out.println("DUPLICATE");
-                }
-        }*/
         return sortRow(row);
     }
 
@@ -142,5 +136,12 @@ public class TicketOperations {
             }
         }
         return winningTickets;
+    }
+
+    // clear active tickets and prepare for new draw
+    public static void restForNewGame() {
+        for (int i = 0; i < tickets.size(); i++) {
+            archivedTickets.add(tickets.get(i));
+        }
     }
 }

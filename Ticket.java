@@ -1,7 +1,7 @@
 public class Ticket {
-    int rows[][];
-    int ticketId;
-    int belongsToUser;
+    private int rows[][];
+    private int ticketId;
+    private int belongsToUser;
     Ticket next;
 
     Ticket (int rows[][], int ticketId, int userId) {
@@ -11,14 +11,14 @@ public class Ticket {
     }
 
     public int[][] getRows() {
-        return rows;
+        return this.rows;
     }
 
     public int ticketBelongsToUser() {
-        return belongsToUser;
+        return this.belongsToUser;
     }
 
     public int getTicketId() {
-        return ticketId;
+        return this.ticketId;
     }
 }

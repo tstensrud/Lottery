@@ -1,9 +1,9 @@
 public class User {
-    String userName;
-    int userId;
-    String phoneNumber;
-    String email;
-    String adress;
+    private String userName;
+    private int userId;
+    private String phoneNumber;
+    private String email;
+    private String adress;
     User next;
 
     User(String userName, int userId, String phoneNumber, String email, String adress) {
@@ -15,22 +15,34 @@ public class User {
     }
 
     public String getUserName() {
-        return userName;
+        return this.userName;
     }
 
     public int getUserId() {
-        return userId;
+        return this.userId;
     }
 
     public String getPhoneNumber() {
-        return phoneNumber;
+        return this.phoneNumber;
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
     public String getAdress() {
-        return adress;
+        return this.adress;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhoneNumbere(String number) {
+        this.phoneNumber = number;
+    }
+
+    public void setAdress(String adress) {
+        this.adress = adress;
     }
 }

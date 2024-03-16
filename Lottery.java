@@ -14,9 +14,9 @@ public class Lottery {
 
         drawUi();
         // generate one generic user for testing
-        UserOperations.users.add(new User("Torbjørn", 1234, "34343434", "a@b.c", "Gata til a mor"));
+        UserOperations.users.add(new User("Torbjørn", 1000, "34343434", "a@b.c", "Gata til a mor"));
         for (int i = 0; i < 100; i++) {
-            TicketOperations.generateTicket(10, 1234);
+            TicketOperations.generateTicket(10, 100);
         }
     }
 
@@ -34,6 +34,7 @@ public class Lottery {
         
         // main frame
         JFrame mainFrame = new JFrame("Lottery");
+        mainFrame.setTitle("Lottery");
         final int MAIN_FRAME_WIDTH = 1024;
         final int MAIN_FRAME_HEIGHT = 768;
         
@@ -65,14 +66,14 @@ public class Lottery {
         mainTextAreaScroll.setBounds(210,50,750,300);
 
         // textfields "add new user"-frame
-        JTextField userUserNameTF = new JTextField();
-        userUserNameTF.setBounds(100, 50, textFieldLength, textFieldHeight);
-        JTextField userEmailTF = new JTextField();
-        userEmailTF.setBounds(100, 100, textFieldLength, textFieldHeight);
-        JTextField userAdressTF = new JTextField();
-        userAdressTF.setBounds(100, 150, textFieldLength, textFieldHeight);
-        JTextField userPhoneTF = new JTextField();
-        userPhoneTF.setBounds(100, 200, textFieldLength, textFieldHeight);
+        JTextField userUserNameTextField = new JTextField();
+        userUserNameTextField.setBounds(100, 50, textFieldLength, textFieldHeight);
+        JTextField userEmailTextField = new JTextField();
+        userEmailTextField.setBounds(100, 100, textFieldLength, textFieldHeight);
+        JTextField userAdressTextField = new JTextField();
+        userAdressTextField.setBounds(100, 150, textFieldLength, textFieldHeight);
+        JTextField userPhoneTextField = new JTextField();
+        userPhoneTextField.setBounds(100, 200, textFieldLength, textFieldHeight);
 
         // buttons "add new user"-frame
         JButton addNewUserButton = new JButton("Add new user");
@@ -80,21 +81,21 @@ public class Lottery {
 
         // buttons mainframe
         JButton newTicketButton = new JButton("New ticket");
-        newTicketButton.setBounds(50, 50, buttonLength, buttonHeight);
+        newTicketButton.setBounds(30, 50, buttonLength, buttonHeight);
         JButton winningNumbersButton = new JButton("Winning numbers");
-        winningNumbersButton.setBounds(50, 100, buttonLength, buttonHeight);
+        winningNumbersButton.setBounds(30, 100, buttonLength, buttonHeight);
         JButton newUserButton = new JButton("New user");
-        newUserButton.setBounds(50, 150, buttonLength, buttonHeight);
+        newUserButton.setBounds(30, 150, buttonLength, buttonHeight);
         JButton allTicketsButton = new JButton("Print all ticket IDs");
-        allTicketsButton.setBounds(50, 200, buttonLength, buttonHeight);
+        allTicketsButton.setBounds(30, 200, buttonLength, buttonHeight);
         JButton findWinningTicketsButton = new JButton("Find winners");
-        findWinningTicketsButton.setBounds(50, 250, buttonLength, buttonHeight);
+        findWinningTicketsButton.setBounds(30, 250, buttonLength, buttonHeight);
         JButton resetButton = new JButton("Reset");
-        resetButton.setBounds(50, 300, buttonLength, buttonHeight);
+        resetButton.setBounds(30, 300, buttonLength, buttonHeight);
         JButton printTicketButton = new JButton("Print ticket");
-        printTicketButton.setBounds(50,350,buttonLength, buttonHeight);
+        printTicketButton.setBounds(30,350,buttonLength, buttonHeight);
         JButton printUserIdsButton = new JButton("Print all user IDs");
-        printUserIdsButton.setBounds(50, 400, buttonLength, buttonHeight);
+        printUserIdsButton.setBounds(30, 400, buttonLength, buttonHeight);
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
@@ -179,7 +180,7 @@ public class Lottery {
                 }
                 else {
                     for (int i = 0; i < TicketOperations.tickets.size(); i++) {
-                        mainTextArea.append("tID-" + (i+1) + ": " + TicketOperations.tickets.get(i).ticketId + "\n");
+                        mainTextArea.append("tID-" + (i+1) + ": " + TicketOperations.tickets.get(i).getTicketId()+ "\n");
                     }
                 }
             }
@@ -263,10 +264,10 @@ public class Lottery {
         addNewUserButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                String userName = userUserNameTF.getText();
-                String userPhone = userPhoneTF.getText();
-                String userEmail = userEmailTF.getText();
-                String userAdress = userAdressTF.getText();
+                String userName = userUserNameTextField.getText();
+                String userPhone = userPhoneTextField.getText();
+                String userEmail = userEmailTextField.getText();
+                String userAdress = userAdressTextField.getText();
 
                 // test that email follows standard formation: name@provider.domain
                 String emailPattern = "^[\\w.-]+@[-\\w]+[.]+[\\w]{2,4}$";
@@ -280,10 +281,10 @@ public class Lottery {
                 else {
                     UserOperations.addNewUser(userName, (UserOperations.users.size() + 1001), userPhone, userEmail, userAdress);
                     JOptionPane.showMessageDialog(addUserFrame, "User " + userName + " added.", "User added", JOptionPane.DEFAULT_OPTION);
-                    userUserNameTF.setText(null);
-                    userPhoneTF.setText(null);
-                    userEmailTF.setText(null);
-                    userAdressTF.setText(null);
+                    userUserNameTextField.setText(null);
+                    userPhoneTextField.setText(null);
+                    userEmailTextField.setText(null);
+                    userAdressTextField.setText(null);
                 }
             }
         });
@@ -317,10 +318,10 @@ public class Lottery {
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // add objects to "add new user" frame
-        addUserFrame.add(userUserNameTF);
-        addUserFrame.add(userEmailTF);
-        addUserFrame.add(userAdressTF);
-        addUserFrame.add(userPhoneTF);
+        addUserFrame.add(userUserNameTextField);
+        addUserFrame.add(userEmailTextField);
+        addUserFrame.add(userAdressTextField);
+        addUserFrame.add(userPhoneTextField);
         addUserFrame.add(userNameLabel);
         addUserFrame.add(emailLabel);
         addUserFrame.add(adressLabel);
@@ -337,12 +338,6 @@ public class Lottery {
         for (int i= 0; i< winningRow.length; i++) {
             winningRow[i] = 0;
         }
-
-        // put current active tickets into archive
-        for (int i = 0; i < TicketOperations.tickets.size(); i++) {
-            TicketOperations.archivedTickets.add(TicketOperations.tickets.get(i));
-        }
-
-        TicketOperations.tickets.clear(); // empty active tickets
+        TicketOperations.restForNewGame(); // empty active tickets
     }
 }
