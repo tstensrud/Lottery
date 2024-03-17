@@ -21,7 +21,7 @@ public abstract class UserOperations {
     }
 
     // return userobject with specific ID
-    public static User returnUserObject(int userId) {
+    public static User getUserObject(int userId) {
         for (int i = 0; i < users.size(); i++) {
             if (users.get(i).getUserId() == userId) {
                 return users.get(i);

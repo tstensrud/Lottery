@@ -4,6 +4,7 @@ public class User {
     private String phoneNumber;
     private String email;
     private String adress;
+    private int accountBalance;
     User next;
 
     User(String userName, int userId, String phoneNumber, String email, String adress) {
@@ -12,6 +13,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.adress = adress;
+        this.accountBalance = 0;
     }
 
     public String getUserName() {
@@ -34,6 +36,10 @@ public class User {
         return this.adress;
     }
 
+    public int getAccountBalande() {
+        return accountBalance;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -44,5 +50,9 @@ public class User {
 
     public void setAdress(String adress) {
         this.adress = adress;
+    }
+
+    public void addToAccountBalane(int sum) {
+        accountBalance = accountBalance + sum;
     }
 }

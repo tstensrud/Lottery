@@ -16,7 +16,7 @@ public class Lottery {
         // generate one generic user for testing
         UserOperations.users.add(new User("Torbjørn", 1000, "34343434", "a@b.c", "Gata til a mor"));
         for (int i = 0; i < 100; i++) {
-            TicketOperations.generateTicket(10, 100);
+            TicketOperations.generateTicket(10, 1000);
         }
     }
 
@@ -96,6 +96,8 @@ public class Lottery {
         printTicketButton.setBounds(30,350,buttonLength, buttonHeight);
         JButton printUserIdsButton = new JButton("Print all user IDs");
         printUserIdsButton.setBounds(30, 400, buttonLength, buttonHeight);
+        JButton getUserAccountBalanceButton = new JButton("Get user balance");
+        getUserAccountBalanceButton.setBounds(30,450,buttonLength,buttonHeight);
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
@@ -103,6 +105,7 @@ public class Lottery {
                 mainTextArea.setText(null);
                 Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
                 int userId;
+                int userIndex;
                 int rows;
                 userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame,"Enter user-ID","UserID", JOptionPane.OK_CANCEL_OPTION));
                 
@@ -117,7 +120,7 @@ public class Lottery {
                     }
                     else {
                         mainTextArea.setText("Ticket created with id: " + TicketOperations.tickets.getLast().getTicketId() + "\n");
-                        mainTextArea.append("Ticket belongs to user: " + UserOperations.returnUserObject(userId).getUserId() + "\n");
+                        mainTextArea.append("Ticket belongs to user: " + UserOperations.getUserObject(userId).getUserId() + "\n");
                         
                         int[][] newlyCreatedTicket = TicketOperations.tickets.getLast().getRows();
                         mainTextArea.append("Numbers of new ticket: " + "\n");
@@ -300,6 +303,27 @@ public class Lottery {
             }
         });
 
+        // get user balance
+        getUserAccountBalanceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int userId;
+                userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame,"Enter user-ID","UserID", JOptionPane.OK_CANCEL_OPTION));
+                
+                if (UserOperations.findUserID(userId) == false) {
+                    JOptionPane.showMessageDialog(mainFrame, "User-ID not found", "Error", JOptionPane.OK_OPTION);
+                    return;
+                }
+                try {
+                    mainTextArea.setText(null);
+                    mainTextArea.setText("User " + userId + " has an account blanace of: " + UserOperations.getUserObject(userId).getAccountBalande() + "kr");
+                }
+                catch (NumberFormatException err) {
+                    JOptionPane.showMessageDialog(mainFrame, "Only numbers in user-id", "Error", JOptionPane.OK_OPTION);
+                    System.out.println("NumberFormatException " + err.getMessage());
+                }
+            }
+        });
+
         // add objects to mainpanel
         //mainFrame.add(mainTextArea);
         mainFrame.add(mainTextAreaScroll);
@@ -311,6 +335,7 @@ public class Lottery {
         mainFrame.add(resetButton);
         mainFrame.add(printTicketButton);
         mainFrame.add(printUserIdsButton);
+        mainFrame.add(getUserAccountBalanceButton);
         mainFrame.setSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);

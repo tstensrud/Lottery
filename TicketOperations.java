@@ -4,9 +4,10 @@ import java.util.Random;
 
 public abstract class TicketOperations {
 
-    public static int totalPlayableNumbers = 38;
+    private static int totalPlayableNumbers = 38;
     public static int totalNumbersPerRow = 8;
     public static int ticketId = 10000;
+    private static int costPerRow = 10;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
     public static LinkedList<Ticket> archivedTickets = new LinkedList<Ticket>();
     public static ArrayList<Integer> winningTickets = new ArrayList<Integer>();
@@ -15,6 +16,7 @@ public abstract class TicketOperations {
     public static void generateTicket(int rows, int userId) {
 
         int[][] ticket = new int[rows][];
+        int ticketCost = costPerRow * rows;
         ticketId++;
         
         for (int i = 0; i < rows; i++) {
@@ -22,6 +24,7 @@ public abstract class TicketOperations {
         }
         
         tickets.add(new Ticket(ticket, ticketId, userId));
+        UserOperations.getUserObject(userId).addToAccountBalane(ticketCost);
 
     }
     
