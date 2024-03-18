@@ -5,9 +5,11 @@ import java.util.Random;
 public abstract class TicketOperations {
 
     private static int totalPlayableNumbers = 38;
-    public static int totalNumbersPerRow = 8;
+    final public static int totalNumbersPerRow = 8;
     public static int ticketId = 10000;
     private static int costPerRow = 10;
+    public static int amountPlayedForThisRound = 0;
+    public static int amountPlayedForTotal = 0;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
     public static LinkedList<Ticket> archivedTickets = new LinkedList<Ticket>();
     public static ArrayList<Integer> winningTickets = new ArrayList<Integer>();
@@ -17,6 +19,8 @@ public abstract class TicketOperations {
 
         int[][] ticket = new int[rows][];
         int ticketCost = costPerRow * rows;
+        amountPlayedForThisRound += ticketCost;
+
         ticketId++;
         
         for (int i = 0; i < rows; i++) {
@@ -28,7 +32,25 @@ public abstract class TicketOperations {
 
     }
     
+    // return total active tickets
+    public static int getTotalActiveTickets() {
+        return tickets.size();
+    }
+
+    // return total archived tickets
+    public static int getTotalArchivedTickets() {
+        return archivedTickets.size();
+    }
     
+    // return total $$ played for current round
+    public static int getAmountPlayedForThisRound() {
+        return amountPlayedForThisRound;
+    }
+
+    // return total $$ played for all time
+    public static int getAmountPlayedForTotal () {
+        return amountPlayedForTotal;
+    }
     /*
      * generate a row of totalNumbersPerRow numbers in ascending order
      * check for duplicate number.
@@ -154,6 +176,8 @@ public abstract class TicketOperations {
         }
         // empty list of active tickets
         tickets.clear();
+        amountPlayedForTotal += amountPlayedForThisRound;
+        amountPlayedForThisRound = 0;
     }
 
     // get ticket object from ticket-ID
@@ -164,5 +188,15 @@ public abstract class TicketOperations {
             }
         }
         return null;
+    }
+
+    // change cost of ticket row
+    public static void setTicketRowCost(int newPrice) {
+        costPerRow = newPrice;
+    }
+
+    // change total playble numbers
+    public static void setTotalPlayableNumbers(int playableNumbers) {
+        totalPlayableNumbers = playableNumbers;
     }
 }

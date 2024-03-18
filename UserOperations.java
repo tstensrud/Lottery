@@ -3,7 +3,10 @@ import java.util.LinkedList;
 public abstract class UserOperations {
     public static LinkedList<User> users = new LinkedList<User>();
 
-
+    // return total users in database
+    public int getTotalUsers() {
+        return users.size();
+    }
     // add new user
     public static void addNewUser(String userName, int userId, String userPhone, String userEmail, String userAdress) {
         users.add(new User(userName, userId, userPhone, userEmail, userAdress));

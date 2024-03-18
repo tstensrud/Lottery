@@ -18,6 +18,8 @@ public class Lottery {
     static boolean mainPanelVisibility = true; // panel #1
     static boolean usersPanelVisibility = false; // panel#2
     static boolean ticketsPanelVisibility = false; // panel #3
+    static boolean ticketStatsPanelVisibility = false; // panel #4
+    static boolean userStatsPanelVisibility = false; // panel #5
     public static void main(String[] args) {
 
         drawUi();
@@ -46,8 +48,10 @@ public class Lottery {
 
         // file menu
         JMenu menuFile = new JMenu("File");
+        JMenuItem menuGameAdministration = new JMenuItem("Game administration");
         JMenuItem menuItemExit = new JMenuItem("Exit");
         JMenuItem menuItemLogOut = new JMenuItem("Log out");
+        menuFile.add(menuGameAdministration);
         menuFile.add(menuItemLogOut);
         menuFile.add(menuItemExit);
 
@@ -63,9 +67,17 @@ public class Lottery {
         JMenuItem menuItemUsers= new JMenuItem("Users");
         menuUsers.add(menuItemUsers);
 
+        // game statistics menu
+        JMenu menuGameStats = new JMenu("Game stats");
+        JMenuItem menuGameStatsTicketStats = new JMenuItem("Ticket stats");
+        JMenuItem menuGameStatsUserStats =new JMenuItem("User stats");
+        menuGameStats.add(menuGameStatsTicketStats);
+        menuGameStats.add(menuGameStatsUserStats);
+
         topMenuBar.add(menuFile);
         topMenuBar.add(menuTickets);
         topMenuBar.add(menuUsers);
+        topMenuBar.add(menuGameStats);
 
         // FRAMES
         // Main frame
@@ -164,6 +176,25 @@ public class Lottery {
             JTextArea ticketsTextArea = new JTextArea("Output");
             JScrollPane ticketsTextAreaScroll = new JScrollPane(ticketsTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             ticketsTextAreaScroll.setBounds(210,50,750,300);
+        /*
+         * TICKET STATS PANEL
+         * All objects  for GAME STATS panel
+         */
+            JPanel ticketStatsPanel = new JPanel();
+            ticketStatsPanel.setBounds(0,0,MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
+            ticketStatsPanel.setVisible(ticketStatsPanelVisibility);
+            ticketStatsPanel.setLayout(null);
+            // labels
+            JLabel totalCurrentTicketsLabel = new JLabel();
+            JLabel totalArchivedTicketsLabel = new JLabel();
+            JLabel totalPlayedForThisRoundLabel = new JLabel();
+            JLabel totalPlayedForTotal = new JLabel();
+            totalCurrentTicketsLabel.setBounds(5,0,400,25);
+            totalArchivedTicketsLabel.setBounds(5,25,400,25);
+            totalPlayedForThisRoundLabel.setBounds(5,50, 400,25);
+            totalPlayedForTotal.setBounds(5,75,400,25);
+
+
 
         JButton testButton = new JButton("Test");
         testButton.setBounds(30, 650, buttonLength, buttonHeight);
@@ -200,7 +231,7 @@ public class Lottery {
             public void actionPerformed(ActionEvent e) {
                 int confirmReset = JOptionPane.showConfirmDialog(mainFrame, "Do you want to reset? This is not undoable!", "RESET", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (confirmReset == JOptionPane.YES_OPTION) {
-                    fullReset();
+                    gameReset();
                     JOptionPane.showMessageDialog(mainFrame, "Game is reset", "Reset", JOptionPane.OK_OPTION);
                 }
                 else if (confirmReset == JOptionPane.NO_OPTION) {
@@ -209,6 +240,38 @@ public class Lottery {
             }
         });
 
+        menuGameAdministration.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String password = JOptionPane.showInputDialog(mainFrame, "Enter password", "Password required", JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    if (password.equals("admin123")) {
+                        System.out.println("ACCESS");
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(mainFrame, "Wrong password", "ERROR", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+                catch (NullPointerException err) {
+                    System.out.println("Login cancelled");
+                }
+            }
+        });
+        // GAME STATS MENU
+        // Ticket stats
+        menuGameStatsTicketStats.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setVisiblityOfPanels(4);
+                mainPanel.setVisible(mainPanelVisibility);
+                usersPanel.setVisible(usersPanelVisibility);
+                ticketsPanel.setVisible(ticketsPanelVisibility);
+                ticketStatsPanel.setVisible(ticketStatsPanelVisibility);
+                totalCurrentTicketsLabel.setText("Total current tickets in play: " + TicketOperations.getTotalActiveTickets());
+                totalArchivedTicketsLabel.setText("Total tickets in archive: " + TicketOperations.getTotalArchivedTickets());
+                totalPlayedForThisRoundLabel.setText("Total played for current round: " + TicketOperations.getAmountPlayedForThisRound());
+                totalPlayedForTotal.setText("Total played for all time: " + TicketOperations.getAmountPlayedForTotal());
+
+            }
+        });
 
         // BUTTON ACTION LISTENERS
         // NEW TICKET newTicketButton actionlistener
@@ -483,10 +546,17 @@ public class Lottery {
         ticketsPanel.add(winningNumbersButton);
         ticketsPanel.add(findWinningTicketsButton);
 
+        // add objects to ticket stats panel
+        ticketStatsPanel.add(totalCurrentTicketsLabel);
+        ticketStatsPanel.add(totalArchivedTicketsLabel);
+        ticketStatsPanel.add(totalPlayedForThisRoundLabel);
+        ticketStatsPanel.add(totalPlayedForTotal);
+
         // add stuff to mainFrame
         mainFrame.add(mainPanel);
         mainFrame.add(usersPanel);
         mainFrame.add(ticketsPanel);
+        mainFrame.add(ticketStatsPanel);
         mainFrame.setJMenuBar(topMenuBar);
         mainFrame.setSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
         mainFrame.setLayout(null);
@@ -508,10 +578,11 @@ public class Lottery {
         addUserFrame.setLayout(null);
         addUserFrame.setResizable(false);
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
     }
     
     // Resets the game, null-ing winning numbers and placing all existing tickets in archive.
-    private static void fullReset() {
+    private static void gameReset() {
         
         // set winning numbers to 0
         for (int i= 0; i< winningRow.length; i++) {
@@ -526,6 +597,7 @@ public class Lottery {
     *  1 is main panel
     *  2 is users panel
     *  3 is tickets panel
+    *  4 is game stats panel
     */
     public static void setVisiblityOfPanels(int panelToShow) {
         switch(panelToShow) {
@@ -533,16 +605,36 @@ public class Lottery {
                 mainPanelVisibility = true;
                 usersPanelVisibility = false;
                 ticketsPanelVisibility = false;
+                ticketStatsPanelVisibility = false;
+                userStatsPanelVisibility = false;
                 break;
             case 2: 
                 usersPanelVisibility = true;
                 mainPanelVisibility = false;
                 ticketsPanelVisibility = false;
+                ticketStatsPanelVisibility = false;
+                userStatsPanelVisibility = false;
                 break;
             case 3: 
                 ticketsPanelVisibility = true;
                 usersPanelVisibility = false;
                 mainPanelVisibility = false;
+                ticketStatsPanelVisibility = false;
+                userStatsPanelVisibility = false;
+                break;
+            case 4:
+                ticketStatsPanelVisibility = true;
+                usersPanelVisibility = false;
+                mainPanelVisibility = false;
+                ticketsPanelVisibility = false;
+                userStatsPanelVisibility = false;
+                break;
+            case 5:
+                userStatsPanelVisibility = true;
+                ticketStatsPanelVisibility = false;
+                usersPanelVisibility = false;
+                mainPanelVisibility = false;
+                ticketsPanelVisibility = false;
                 break;
         }
     }
