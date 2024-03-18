@@ -28,8 +28,11 @@ public abstract class TicketOperations {
 
     }
     
-    // generate a row of totalNumbersPerRow numbers in ascending order. check for duplicate number.
-     
+    
+    /*
+     * generate a row of totalNumbersPerRow numbers in ascending order
+     * check for duplicate number.
+     */ 
     private static int[] generateTicketRow() {
         int[] row = new int[totalNumbersPerRow];
         int number;
@@ -141,7 +144,10 @@ public abstract class TicketOperations {
         return winningTickets;
     }
 
-    // clear active tickets and prepare for new draw
+    /*
+     * Move active tickets into archive
+     * clear active tickets
+     */ 
     public static void restForNewGame() {
         for (int i = 0; i < tickets.size(); i++) {
             archivedTickets.add(tickets.get(i));
