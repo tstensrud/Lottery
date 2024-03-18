@@ -36,7 +36,7 @@ public class User {
         return this.adress;
     }
 
-    public int getAccountBalande() {
+    public int getAccountBalance() {
         return accountBalance;
     }
 
@@ -52,7 +52,7 @@ public class User {
         this.adress = adress;
     }
 
-    public void addToAccountBalane(int sum) {
+    public void addToAccountBalance(int sum) {
         accountBalance = accountBalance + sum;
     }
 }

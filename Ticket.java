@@ -14,7 +14,7 @@ public class Ticket {
         return this.rows;
     }
 
-    public int ticketBelongsToUser() {
+    public int getBelongsToUser() {
         return this.belongsToUser;
     }
 

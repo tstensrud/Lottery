@@ -24,7 +24,7 @@ public abstract class TicketOperations {
         }
         
         tickets.add(new Ticket(ticket, ticketId, userId));
-        UserOperations.getUserObject(userId).addToAccountBalane(ticketCost);
+        UserOperations.getUserObject(userId).addToAccountBalance(ticketCost);
 
     }
     
@@ -146,5 +146,17 @@ public abstract class TicketOperations {
         for (int i = 0; i < tickets.size(); i++) {
             archivedTickets.add(tickets.get(i));
         }
+        // empty list of active tickets
+        tickets.clear();
+    }
+
+    // get ticket object from ticket-ID
+    public static Ticket getTicket(int ticketId) {
+        for (int i = 0; i < tickets.size(); i++) {
+            if (tickets.get(i).getTicketId() == ticketId) {
+                return tickets.get(i);
+            }
+        }
+        return null;
     }
 }

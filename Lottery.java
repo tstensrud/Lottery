@@ -98,6 +98,10 @@ public class Lottery {
         printUserIdsButton.setBounds(30, 400, buttonLength, buttonHeight);
         JButton getUserAccountBalanceButton = new JButton("Get user balance");
         getUserAccountBalanceButton.setBounds(30,450,buttonLength,buttonHeight);
+        JButton printArchivedTicketsButton = new JButton("Achived tickets");
+        printArchivedTicketsButton.setBounds(30,500,buttonLength,buttonHeight);
+        JButton printUserInfoButton = new JButton("User info");
+        printUserInfoButton.setBounds(30,550,buttonLength,buttonHeight);
 
         // NEW TICKET newTicketButton actionlistener
         newTicketButton.addActionListener(new ActionListener() {
@@ -105,7 +109,6 @@ public class Lottery {
                 mainTextArea.setText(null);
                 Integer[] rowChoice = {1,2,3,4,5,6,7,8,9,10};
                 int userId;
-                int userIndex;
                 int rows;
                 userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame,"Enter user-ID","UserID", JOptionPane.OK_CANCEL_OPTION));
                 
@@ -292,7 +295,7 @@ public class Lottery {
             }
         });
 
-        // print user ID
+        // PRINT USER IDs actionlistener
         printUserIdsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 mainTextArea.setText(null);
@@ -303,7 +306,7 @@ public class Lottery {
             }
         });
 
-        // get user balance
+        // GET USER BALANCE actionlistener
         getUserAccountBalanceButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int userId;
@@ -315,7 +318,7 @@ public class Lottery {
                 }
                 try {
                     mainTextArea.setText(null);
-                    mainTextArea.setText("User " + userId + " has an account blanace of: " + UserOperations.getUserObject(userId).getAccountBalande() + "kr");
+                    mainTextArea.setText("User " + userId + " has an account blanace of: " + UserOperations.getUserObject(userId).getAccountBalance() + "kr");
                 }
                 catch (NumberFormatException err) {
                     JOptionPane.showMessageDialog(mainFrame, "Only numbers in user-id", "Error", JOptionPane.OK_OPTION);
@@ -324,6 +327,46 @@ public class Lottery {
             }
         });
 
+        // PRINT ALL ARCHIVED TICKETS actionlistener
+        printArchivedTicketsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mainTextArea.setText(null);
+                if (TicketOperations.archivedTickets.size() == 0) {
+                    JOptionPane.showMessageDialog(mainFrame, "No archived tickets in databsase.", "Oops", JOptionPane.OK_OPTION);
+                }
+                else {
+                    for (int i = 0; i < TicketOperations.archivedTickets.size(); i++) {
+                        mainTextArea.append("tID-" + (i+1) + ": " + TicketOperations.archivedTickets.get(i).getTicketId()+ "\n");
+                    }
+                }
+            }
+        });
+
+        // PRINT USER INFO actionlistener
+        printUserInfoButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int userId;
+                try {
+                    userId = Integer.parseInt(JOptionPane.showInputDialog(mainFrame, "Enter user-ID", "User ID", JOptionPane.OK_CANCEL_OPTION));
+                    if (UserOperations.findUserID(userId) == false) {
+                        JOptionPane.showMessageDialog(mainFrame, "User-ID not found", "Error", JOptionPane.OK_OPTION);
+                        return;
+                    }
+                    User user = UserOperations.getUserObject(userId);
+                    mainTextArea.setText(null);
+                    mainTextArea.append("Name: " + user.getUserName() + "\n");
+                    mainTextArea.append("Email: " + user.getEmail() + "\n");
+                    mainTextArea.append("Phone number: " + user.getPhoneNumber() + "\n");
+                    mainTextArea.append("Adress: " + user.getAdress() + "\n");
+                    mainTextArea.append("Account balance: " + user.getAccountBalance() + "kr");
+                }
+                catch (NumberFormatException err) {
+                    JOptionPane.showMessageDialog(mainFrame, "Only numbers in user-id", "Error", JOptionPane.OK_OPTION);
+                    System.out.println("NumberFormatException " + err.getMessage());
+                }
+
+            }
+        });
         // add objects to mainpanel
         //mainFrame.add(mainTextArea);
         mainFrame.add(mainTextAreaScroll);
@@ -336,6 +379,8 @@ public class Lottery {
         mainFrame.add(printTicketButton);
         mainFrame.add(printUserIdsButton);
         mainFrame.add(getUserAccountBalanceButton);
+        mainFrame.add(printArchivedTicketsButton);
+        mainFrame.add(printUserInfoButton);
         mainFrame.setSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
         mainFrame.setLayout(null);
         mainFrame.setResizable(false);
@@ -358,11 +403,14 @@ public class Lottery {
         addUserFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     
+    // Resets the game, null-ing winning numbers and placing all existing tickets in archive.
     private static void fullReset() {
+        
         // set winning numbers to 0
         for (int i= 0; i< winningRow.length; i++) {
             winningRow[i] = 0;
         }
-        TicketOperations.restForNewGame(); // empty active tickets
+        // empty active tickets
+        TicketOperations.restForNewGame();
     }
 }
