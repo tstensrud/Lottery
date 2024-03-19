@@ -12,14 +12,18 @@ public class Lottery {
     public static int totaltNumbersPerRow = TicketOperations.totalNumbersPerRow;
     public static int[] currentWinningNumbers = new int[totaltNumbersPerRow];
     public static int[] winningRow = new int[totaltNumbersPerRow];
-
-    // Visibility-variables for panels
-    static boolean testPanelVisibility = false; 
-    static boolean mainPanelVisibility = true; // panel #1
-    static boolean usersPanelVisibility = false; // panel#2
-    static boolean ticketsPanelVisibility = false; // panel #3
-    static boolean ticketStatsPanelVisibility = false; // panel #4
-    static boolean userStatsPanelVisibility = false; // panel #5
+    private static int numberOfPanels = 6;
+    private static int currentActivePanel = 0;
+    /* 
+     * Visibility array for panels
+     * [0] = main panel
+     * [1] = users panel
+     * [2] = tickets panel
+     * [3] = ticket stats panel
+     * [4] = user stats panel
+     * [5] = game options panel
+     */
+    static boolean[] panelVisibility = {true, false, false, false, false, false}; // initialize visibility of panels.
     public static void main(String[] args) {
 
         drawUi();
@@ -32,11 +36,12 @@ public class Lottery {
 
     public static void drawUi() {
 
-        // dimensions of buttons and textfields
+        // dimensions
         int buttonLength = 150;
         int buttonHeight = 30;
         int textFieldHeight = 25;
         int textFieldLength = 250;
+        int labelHeight = 25;
 
         // find screenresolution of user
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -95,109 +100,126 @@ public class Lottery {
         mainFrame.setLocation((screenWidth / 2) - (MAIN_FRAME_WIDTH/2),(screenHeight / 2) - (MAIN_FRAME_HEIGHT / 2));
         addUserFrame.setLocation((screenWidth / 2) - (ADD_USER_FRAME_WIDTH/2),(screenHeight / 2) - (ADD_USER_FRAME_HEIGHT / 2));
         
-        
         /*
-         * MAIN PANEL
+         * Generate panels. The total amount is fixed
+         */
+        JPanel[] panels = new JPanel[numberOfPanels];
+        for (int i = 0; i < panels.length; i++) {
+            panels[i] = new JPanel();
+            panels[i].setBounds(0,0,MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
+            panels[i].setLayout(null);
+            panels[i].setVisible(panelVisibility[i]);
+        }
+        
+
+        /*
+         * MAIN PANEL, panel[0]
          * All objects for the MAIN panel
          */
-            JPanel mainPanel = new JPanel();
-            mainPanel.setBounds(0,0,MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
-            mainPanel.setVisible(mainPanelVisibility);
-            mainPanel.setLayout(null);
-            JLabel welcomeMessage = new JLabel("Use menu to begin");
-            welcomeMessage.setBounds(5,0,200,25);
-            mainPanel.add(welcomeMessage);
+        JLabel welcomeMessage = new JLabel("Use menu to begin");
+        welcomeMessage.setBounds(5,0,200,labelHeight);
+        panels[0].add(welcomeMessage);
 
         /*
-         * USERS PANEL
+         * USERS PANEL panel[1]
          * All objects for the USERS panel
          */
-            JPanel usersPanel = new JPanel();
-            usersPanel.setBounds(0,0,MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
-            usersPanel.setVisible(usersPanelVisibility);
-            usersPanel.setLayout(null);
-            // buttons
-            JButton newUserButton = new JButton("New user");
-            newUserButton.setBounds(30, 50, buttonLength, buttonHeight);
-            JButton getUserAccountBalanceButton = new JButton("Get user balance");
-            getUserAccountBalanceButton.setBounds(30,100,buttonLength,buttonHeight);
-            JButton printUserIdsButton = new JButton("Print all user IDs");
-            printUserIdsButton.setBounds(30, 150, buttonLength, buttonHeight);
-            JButton printUserInfoButton = new JButton("User info");
-            printUserInfoButton.setBounds(30,200,buttonLength,buttonHeight);
-            // button for add new user window
-            JButton addNewUserButton = new JButton("Add");
-            addNewUserButton.setBounds(10,250,buttonLength, buttonHeight);
-            // labeles "add new user"-frame
-            JLabel userNameLabel = new JLabel ("Username");
-            userNameLabel.setBounds(10,50,100,25);
-            JLabel emailLabel = new JLabel ("E-mail");
-            emailLabel.setBounds(10,100,100,25);
-            JLabel adressLabel = new JLabel("Adress");
-            adressLabel.setBounds(10,150,100,25);
-            JLabel phoneLabel = new JLabel("Phone number");
-            phoneLabel.setBounds(10,200,100,25);
-            // textfields "add new user"-frame
-            JTextField userUserNameTextField = new JTextField();
-            userUserNameTextField.setBounds(100, 50, textFieldLength, textFieldHeight);
-            JTextField userEmailTextField = new JTextField();
-            userEmailTextField.setBounds(100, 100, textFieldLength, textFieldHeight);
-            JTextField userAdressTextField = new JTextField();
-            userAdressTextField.setBounds(100, 150, textFieldLength, textFieldHeight);
-            JTextField userPhoneTextField = new JTextField();
-            userPhoneTextField.setBounds(100, 200, textFieldLength, textFieldHeight);
-            // textarea
-            JTextArea userTextArea = new JTextArea("Output");
-            JScrollPane userTextAreaScroll = new JScrollPane(userTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            userTextAreaScroll.setBounds(210,50,750,300);
+        // buttons
+        JButton newUserButton = new JButton("New user");
+        newUserButton.setBounds(30, 50, buttonLength, buttonHeight);
+        JButton getUserAccountBalanceButton = new JButton("Get user balance");
+        getUserAccountBalanceButton.setBounds(30,100,buttonLength,buttonHeight);
+        JButton printUserIdsButton = new JButton("Print all user IDs");
+        printUserIdsButton.setBounds(30, 150, buttonLength, buttonHeight);
+        JButton printUserInfoButton = new JButton("User info");
+        printUserInfoButton.setBounds(30,200,buttonLength,buttonHeight);
+        // button for add new user window
+        JButton addNewUserButton = new JButton("Add");
+        addNewUserButton.setBounds(10,250,buttonLength, buttonHeight);
+        // labeles "add new user"-frame
+        JLabel userNameLabel = new JLabel ("Username");
+        userNameLabel.setBounds(10,50,100,25);
+        JLabel emailLabel = new JLabel ("E-mail");
+        emailLabel.setBounds(10,100,100,25);
+        JLabel adressLabel = new JLabel("Adress");
+        adressLabel.setBounds(10,150,100,25);
+        JLabel phoneLabel = new JLabel("Phone number");
+        phoneLabel.setBounds(10,200,100,25);
+        // textfields "add new user"-frame
+        JTextField userUserNameTextField = new JTextField();
+        userUserNameTextField.setBounds(100, 50, textFieldLength, textFieldHeight);
+        JTextField userEmailTextField = new JTextField();
+        userEmailTextField.setBounds(100, 100, textFieldLength, textFieldHeight);
+        JTextField userAdressTextField = new JTextField();
+        userAdressTextField.setBounds(100, 150, textFieldLength, textFieldHeight);
+        JTextField userPhoneTextField = new JTextField();
+        userPhoneTextField.setBounds(100, 200, textFieldLength, textFieldHeight);
+        // textarea
+        JTextArea userTextArea = new JTextArea("Output");
+        JScrollPane userTextAreaScroll = new JScrollPane(userTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        userTextAreaScroll.setBounds(210,50,750,300);
 
         /*
-         * TICKETS PANEL
+         * TICKETS PANEL panel[2]
          * All objects for the TICKETS panel
          */
-            JPanel ticketsPanel = new JPanel();
-            ticketsPanel.setBounds(0,0,MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
-            ticketsPanel.setVisible(ticketsPanelVisibility);
-            ticketsPanel.setLayout(null);
-            // buttons
-            JButton newTicketButton = new JButton("New ticket");
-            newTicketButton.setBounds(30, 50, buttonLength, buttonHeight);
-            JButton winningNumbersButton = new JButton("Winning numbers");
-            winningNumbersButton.setBounds(30, 100, buttonLength, buttonHeight);
-            JButton allTicketsButton = new JButton("Print all ticket IDs");
-            allTicketsButton.setBounds(30, 150, buttonLength, buttonHeight);
-            JButton findWinningTicketsButton = new JButton("Find winners");
-            findWinningTicketsButton.setBounds(30, 200, buttonLength, buttonHeight);
-            JButton printArchivedTicketsButton = new JButton("Achived tickets");
-            printArchivedTicketsButton.setBounds(30,250,buttonLength,buttonHeight);
-            JButton printTicketButton = new JButton("Print ticket");
-            printTicketButton.setBounds(30,300,buttonLength, buttonHeight);
-            // textarea
-            JTextArea ticketsTextArea = new JTextArea("Output");
-            JScrollPane ticketsTextAreaScroll = new JScrollPane(ticketsTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            ticketsTextAreaScroll.setBounds(210,50,750,300);
+        // buttons
+        JButton newTicketButton = new JButton("New ticket");
+        newTicketButton.setBounds(30, 50, buttonLength, buttonHeight);
+        JButton winningNumbersButton = new JButton("Winning numbers");
+        winningNumbersButton.setBounds(30, 100, buttonLength, buttonHeight);
+        JButton allTicketsButton = new JButton("Print all ticket IDs");
+        allTicketsButton.setBounds(30, 150, buttonLength, buttonHeight);
+        JButton findWinningTicketsButton = new JButton("Find winners");
+        findWinningTicketsButton.setBounds(30, 200, buttonLength, buttonHeight);
+        JButton printArchivedTicketsButton = new JButton("Achived tickets");
+        printArchivedTicketsButton.setBounds(30,250,buttonLength,buttonHeight);
+        JButton printTicketButton = new JButton("Print ticket");
+        printTicketButton.setBounds(30,300,buttonLength, buttonHeight);
+        // textarea
+        JTextArea ticketsTextArea = new JTextArea("Output");
+        JScrollPane ticketsTextAreaScroll = new JScrollPane(ticketsTextArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        ticketsTextAreaScroll.setBounds(210,50,750,300);
+        
         /*
-         * TICKET STATS PANEL
+         * TICKET STATS PANEL panel[3]
          * All objects  for GAME STATS panel
          */
-            JPanel ticketStatsPanel = new JPanel();
-            ticketStatsPanel.setBounds(0,0,MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
-            ticketStatsPanel.setVisible(ticketStatsPanelVisibility);
-            ticketStatsPanel.setLayout(null);
-            // labels
-            JLabel totalCurrentTicketsLabel = new JLabel();
-            JLabel totalArchivedTicketsLabel = new JLabel();
-            JLabel totalPlayedForThisRoundLabel = new JLabel();
-            JLabel totalPlayedForTotal = new JLabel();
-            totalCurrentTicketsLabel.setBounds(5,0,400,25);
-            totalArchivedTicketsLabel.setBounds(5,25,400,25);
-            totalPlayedForThisRoundLabel.setBounds(5,50, 400,25);
-            totalPlayedForTotal.setBounds(5,75,400,25);
+        // labels
+        JLabel totalCurrentTicketsLabel = new JLabel();
+        JLabel totalArchivedTicketsLabel = new JLabel();
+        JLabel totalPlayedForThisRoundLabel = new JLabel();
+        JLabel totalPlayedForTotal = new JLabel();
+        totalCurrentTicketsLabel.setBounds(5,0,400,labelHeight);
+        totalArchivedTicketsLabel.setBounds(5,25,400,labelHeight);
+        totalPlayedForThisRoundLabel.setBounds(5,50, 400,labelHeight);
+        totalPlayedForTotal.setBounds(5,75,400,labelHeight);
+
+        /*
+         * USER STATS PANEL panel[4]
+         * All objects for USER STATS panel
+         */
+        JLabel totalUsersLabel = new JLabel();
+        totalUsersLabel.setBounds(5,0,400,labelHeight);
 
 
+        /*
+         * GAME OPTIONS PANEL panel[5]
+         * All objects for GAME OPTIONS panel
+         */
+        JLabel currentPriceLabel = new JLabel("Current price per row: ");
+        currentPriceLabel.setBounds(5,5,150,labelHeight);
+        JLabel currentPlayableNumbersLabel = new JLabel ("Current max playable numbers: ");
+        JTextField currentPriceTextField = new JTextField();
+        currentPriceTextField.setBounds(160,5,30,25);
+        JButton updatePriceButton = new JButton("Update");
+        updatePriceButton.setBounds(200,5,buttonLength, buttonHeight);
 
-        JButton testButton = new JButton("Test");
-        testButton.setBounds(30, 650, buttonLength, buttonHeight);
+        currentPlayableNumbersLabel.setBounds(5,50,400,labelHeight);
+        panels[5].add(currentPriceLabel);
+        panels[5].add(currentPlayableNumbersLabel);
+        panels[5].add(currentPriceTextField);
+        panels[5].add(updatePriceButton);
 
         // MENU-ITEMS ACTIONLISTENERS
         // FILE MENU
@@ -210,23 +232,24 @@ public class Lottery {
         // USERS MENU
         menuItemUsers.addActionListener(new ActionListener() {
             public void actionPerformed (ActionEvent e) {
-                setVisiblityOfPanels(2);
-                mainPanel.setVisible(mainPanelVisibility);
-                ticketsPanel.setVisible(ticketsPanelVisibility);
-                usersPanel.setVisible(usersPanelVisibility);
+                panels[currentActivePanel].setVisible(false);
+                setActivePanel(1);
+                panels[currentActivePanel].setVisible(true);
+
             }
         });
 
         // TICKETS MENU
         menuItemTickets.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisiblityOfPanels(3);
-                mainPanel.setVisible(mainPanelVisibility);
-                usersPanel.setVisible(usersPanelVisibility);
-                ticketsPanel.setVisible(ticketsPanelVisibility);
+                panels[currentActivePanel].setVisible(false);
+                setActivePanel(2);
+                panels[currentActivePanel].setVisible(true);
+
             }
         });
 
+        // RESET GAME actionlistener
         menuItemResetGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int confirmReset = JOptionPane.showConfirmDialog(mainFrame, "Do you want to reset? This is not undoable!", "RESET", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -240,12 +263,17 @@ public class Lottery {
             }
         });
 
+        // GAME ADMINISTRATION actionlistener
         menuGameAdministration.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String password = JOptionPane.showInputDialog(mainFrame, "Enter password", "Password required", JOptionPane.INFORMATION_MESSAGE);
                 try {
                     if (password.equals("admin123")) {
-                        System.out.println("ACCESS");
+                        panels[currentActivePanel].setVisible(false);
+                        setActivePanel(5);
+                        panels[currentActivePanel].setVisible(true);
+                        currentPriceTextField.setText(Integer.toString(TicketOperations.getCostPerRow()));
+
                     }
                     else {
                         JOptionPane.showMessageDialog(mainFrame, "Wrong password", "ERROR", JOptionPane.INFORMATION_MESSAGE);
@@ -256,20 +284,29 @@ public class Lottery {
                 }
             }
         });
+
         // GAME STATS MENU
         // Ticket stats
         menuGameStatsTicketStats.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setVisiblityOfPanels(4);
-                mainPanel.setVisible(mainPanelVisibility);
-                usersPanel.setVisible(usersPanelVisibility);
-                ticketsPanel.setVisible(ticketsPanelVisibility);
-                ticketStatsPanel.setVisible(ticketStatsPanelVisibility);
+                panels[currentActivePanel].setVisible(false);
+                setActivePanel(3);
+                panels[currentActivePanel].setVisible(true);
+                
                 totalCurrentTicketsLabel.setText("Total current tickets in play: " + TicketOperations.getTotalActiveTickets());
                 totalArchivedTicketsLabel.setText("Total tickets in archive: " + TicketOperations.getTotalArchivedTickets());
                 totalPlayedForThisRoundLabel.setText("Total played for current round: " + TicketOperations.getAmountPlayedForThisRound());
                 totalPlayedForTotal.setText("Total played for all time: " + TicketOperations.getAmountPlayedForTotal());
 
+            }
+        });
+        // User stats
+        menuGameStatsUserStats.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                panels[currentActivePanel].setVisible(false);
+                setActivePanel(4);
+                panels[currentActivePanel].setVisible(true);
+                totalUsersLabel.setText("Total users in database: " + UserOperations.getTotalUsers());
             }
         });
 
@@ -524,39 +561,35 @@ public class Lottery {
             }
         });
        
-        // TESTBUTTON  
-        testButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {          
-
-            }
-        });
-       
         // add objects to user-panel
-        usersPanel.add(printUserIdsButton);
-        usersPanel.add(newUserButton);
-        usersPanel.add(getUserAccountBalanceButton);
-        usersPanel.add(userTextAreaScroll);
+        panels[1].add(printUserIdsButton);
+        panels[1].add(newUserButton);
+        panels[1].add(getUserAccountBalanceButton);
+        panels[1].add(userTextAreaScroll);
 
         // add objects to tickets-panel
-        ticketsPanel.add(ticketsTextAreaScroll);
-        ticketsPanel.add(newTicketButton);
-        ticketsPanel.add(allTicketsButton);
-        ticketsPanel.add(printTicketButton);
-        ticketsPanel.add(printArchivedTicketsButton);
-        ticketsPanel.add(winningNumbersButton);
-        ticketsPanel.add(findWinningTicketsButton);
+        panels[2].add(ticketsTextAreaScroll);
+        panels[2].add(newTicketButton);
+        panels[2].add(allTicketsButton);
+        panels[2].add(printTicketButton);
+        panels[2].add(printArchivedTicketsButton);
+        panels[2].add(winningNumbersButton);
+        panels[2].add(findWinningTicketsButton);
 
         // add objects to ticket stats panel
-        ticketStatsPanel.add(totalCurrentTicketsLabel);
-        ticketStatsPanel.add(totalArchivedTicketsLabel);
-        ticketStatsPanel.add(totalPlayedForThisRoundLabel);
-        ticketStatsPanel.add(totalPlayedForTotal);
+        panels[3].add(totalCurrentTicketsLabel);
+        panels[3].add(totalArchivedTicketsLabel);
+        panels[3].add(totalPlayedForThisRoundLabel);
+        panels[3].add(totalPlayedForTotal);
 
-        // add stuff to mainFrame
-        mainFrame.add(mainPanel);
-        mainFrame.add(usersPanel);
-        mainFrame.add(ticketsPanel);
-        mainFrame.add(ticketStatsPanel);
+        // add objects to user stats panel
+        panels[4].add(totalUsersLabel);
+
+        // add panels to mainFrame
+        for (int i = 0; i < panels.length; i++) {
+            mainFrame.add(panels[i]);
+        }
+
         mainFrame.setJMenuBar(topMenuBar);
         mainFrame.setSize(MAIN_FRAME_WIDTH, MAIN_FRAME_HEIGHT);
         mainFrame.setLayout(null);
@@ -592,50 +625,11 @@ public class Lottery {
         TicketOperations.restForNewGame();
     }
 
-    /* 
-    *  Sets visibility of all panels except panelToShow to false 
-    *  1 is main panel
-    *  2 is users panel
-    *  3 is tickets panel
-    *  4 is game stats panel
-    */
-    public static void setVisiblityOfPanels(int panelToShow) {
-        switch(panelToShow) {
-            case 1: 
-                mainPanelVisibility = true;
-                usersPanelVisibility = false;
-                ticketsPanelVisibility = false;
-                ticketStatsPanelVisibility = false;
-                userStatsPanelVisibility = false;
-                break;
-            case 2: 
-                usersPanelVisibility = true;
-                mainPanelVisibility = false;
-                ticketsPanelVisibility = false;
-                ticketStatsPanelVisibility = false;
-                userStatsPanelVisibility = false;
-                break;
-            case 3: 
-                ticketsPanelVisibility = true;
-                usersPanelVisibility = false;
-                mainPanelVisibility = false;
-                ticketStatsPanelVisibility = false;
-                userStatsPanelVisibility = false;
-                break;
-            case 4:
-                ticketStatsPanelVisibility = true;
-                usersPanelVisibility = false;
-                mainPanelVisibility = false;
-                ticketsPanelVisibility = false;
-                userStatsPanelVisibility = false;
-                break;
-            case 5:
-                userStatsPanelVisibility = true;
-                ticketStatsPanelVisibility = false;
-                usersPanelVisibility = false;
-                mainPanelVisibility = false;
-                ticketsPanelVisibility = false;
-                break;
-        }
+    public static int getActivePanel() {
+        return currentActivePanel;
+    }
+
+    public static void setActivePanel(int newActivePanel) {
+        currentActivePanel = newActivePanel;
     }
 }

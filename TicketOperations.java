@@ -11,7 +11,7 @@ public abstract class TicketOperations {
     public static int amountPlayedForThisRound = 0;
     public static int amountPlayedForTotal = 0;
     public static LinkedList<Ticket> tickets = new LinkedList<Ticket>();
-    public static LinkedList<Ticket> archivedTickets = new LinkedList<Ticket>();
+    public static ArrayList<Ticket> archivedTickets = new ArrayList<Ticket>();
     public static ArrayList<Integer> winningTickets = new ArrayList<Integer>();
 
     // Generate a ticket with n-amount of rows
@@ -51,6 +51,7 @@ public abstract class TicketOperations {
     public static int getAmountPlayedForTotal () {
         return amountPlayedForTotal;
     }
+
     /*
      * generate a row of totalNumbersPerRow numbers in ascending order
      * check for duplicate number.
@@ -193,6 +194,11 @@ public abstract class TicketOperations {
     // change cost of ticket row
     public static void setTicketRowCost(int newPrice) {
         costPerRow = newPrice;
+    }
+
+    // get cost of ticket row
+    public static int getCostPerRow() {
+        return costPerRow;
     }
 
     // change total playble numbers

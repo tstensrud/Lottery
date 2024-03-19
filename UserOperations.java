@@ -4,7 +4,7 @@ public abstract class UserOperations {
     public static LinkedList<User> users = new LinkedList<User>();
 
     // return total users in database
-    public int getTotalUsers() {
+    public static int getTotalUsers() {
         return users.size();
     }
     // add new user
@@ -32,6 +32,7 @@ public abstract class UserOperations {
         }
         return null;
     }
+    
     // return all userIDs in users-list
     public static int[] returnUserIDs() {
         int[] userIds = new int[users.size()];
